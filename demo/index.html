@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内网服务导航</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+            --bg-color: #ffffff;
+            --surface-color: #ffffff;
+            --text-main: #202124;
+            --text-dim: #5f6368;
+            --border-color: #dadce0;
+            --card-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+            --card-shadow-hover: 0 4px 6px 0 rgba(60, 64, 67, 0.3), 0 4px 10px 2px rgba(60, 64, 67, 0.15);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 2rem;
+        }
+
+        header {
+            padding: 4rem 1rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Product Sans', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span:nth-child(1) {
+            color: var(--google-blue);
+        }
+
+        header h1 span:nth-child(2) {
+            color: var(--google-red);
+        }
+
+        header h1 span:nth-child(3) {
+            color: var(--google-yellow);
+        }
+
+        header h1 span:nth-child(4) {
+            color: var(--google-blue);
+        }
+
+        header h1 span:nth-child(5) {
+            color: var(--google-green);
+        }
+
+        header h1 span:nth-child(6) {
+            color: var(--google-red);
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .filters-container {
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.5rem 1.2rem;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--google-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .search-box svg {
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .filter-chip {
+            background: #fff;
+            color: var(--text-dim);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 1rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .filter-chip:hover {
+            background-color: #f8f9fa;
+            border-color: var(--google-blue);
+            color: var(--google-blue);
+        }
+
+        .filter-chip.active {
+            background-color: var(--google-blue);
+            color: #fff;
+            border-color: var(--google-blue);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #dadce0;
+        }
+
+        .status-online .status-dot {
+            background-color: var(--google-green);
+            box-shadow: 0 0 8px rgba(52, 168, 83, 0.4);
+        }
+
+        .status-offline .status-dot {
+            background-color: var(--google-red);
+        }
+
+        .status-offline {
+            color: var(--google-red);
+        }
+
+        .status-online {
+            color: var(--google-green);
+        }
+
+        .check-btn {
+            background-color: transparent !important;
+            border-color: var(--google-blue) !important;
+            color: var(--google-blue) !important;
+        }
+
+        .check-btn:hover {
+            background-color: rgba(66, 133, 244, 0.04) !important;
+        }
+
+        .toggle-container {
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .google-btn {
+            background: #fff;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.5rem;
+            border-radius: 24px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .google-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #dfe1e5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: var(--google-blue);
+        }
+
+        .view-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .switch-btn {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch-btn.active {
+            background: var(--google-blue);
+            color: #fff;
+            border-color: var(--google-blue);
+            box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+        }
+
+        /* Topology View Styles */
+        #topology-view {
+            display: none;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            padding: 2rem;
+            min-height: 800px;
+        }
+
+        .topo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .ip-group {
+            border: 1px solid #e8eaed;
+            border-radius: 16px;
+            padding: 1.2rem;
+            background: #fff;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .ip-header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            user-select: none;
+            min-width: fit-content;
+        }
+
+        .ip-header:hover {
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .ip-node {
+            background: var(--google-green);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 24px;
+            font-weight: 500;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(52, 168, 83, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+            position: relative;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+            color: var(--text-dim);
+        }
+
+        .ip-group.collapsed .expand-icon {
+            transform: rotate(-90deg);
+        }
+
+        .ip-group.collapsed .ip-content {
+            display: none;
+        }
+
+        .ip-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .topo-group {
+            display: flex;
+            align-items: center;
+            gap: 3.5rem;
+            position: relative;
+        }
+
+        .end-node {
+            background: #fff;
+            border: 2px solid var(--google-blue);
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            z-index: 10;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .end-node strong {
+            display: block;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .end-node span {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .service-nodes {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .service-mini-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            width: fit-content;
+            min-width: 250px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .service-mini-card:hover {
+            transform: translateX(5px);
+            border-color: var(--google-blue);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .topo-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            fill: none;
+            stroke: #dfe1e5;
+            stroke-width: 2;
+            transition: stroke 0.3s;
+        }
+
+        .topo-group:hover .connection-line {
+            stroke: var(--google-blue);
+            opacity: 0.4;
+        }
+
+        .pulse-circle {
+            fill: var(--google-blue);
+            filter: blur(2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            padding: 0 1rem;
+        }
+
+        .service-card {
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-height: 80px;
+            flex-wrap: wrap;
+            /* Allowed for details expansion */
+        }
+
+        .service-card:hover {
+            box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.302), 0 4px 8px 3px rgba(60, 64, 67, 0.149);
+            border-color: transparent;
+        }
+
+        .favicon-box {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 1px solid #f1f3f4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .favicon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .service-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .service-info h2 {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .external-link {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .external-link:hover {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            color: var(--google-blue);
+        }
+
+        .comment-tag {
+            background: #f1f3f4;
+            color: #5f6368;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .details-content {
+            display: none;
+            width: 100%;
+            /* Force to next row in flex-wrap container */
+            color: var(--text-dim);
+            padding: 0.8rem 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid var(--google-blue);
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .details-content.active {
+            display: block;
+        }
+
+        .detail-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 4rem 0 2rem;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            <span>G</span><span>o</span><span>t</span><span>L</span><span>u</span><span>c</span><span>k</span><span>y</span>
+        </h1>
+        <p>Your Private Gateway to Local Services</p>
+    </header>
+
+    <div class="search-container">
+        <div class="search-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="global-search" placeholder="搜索服务、域名、终端地址或分组..." oninput="handleSearch()">
+        </div>
+    </div>
+
+    <div class="toggle-container" style="gap: 1rem;">
+        <button id="toggle-display" class="google-btn" onclick="toggleUndisplay()">
+            <span id="btn-text">Show All Services</span>
+        </button>
+        <button id="check-status" class="google-btn check-btn" onclick="checkAllStatus()">
+            <span>Check Service Status</span>
+        </button>
+    </div>
+
+    <div class="view-switcher">
+        <button class="switch-btn active" id="grid-view-btn" onclick="switchView('grid')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            网格视图
+        </button>
+        <button class="switch-btn" id="topo-view-btn" onclick="switchView('topo')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            拓扑连接
+        </button>
+    </div>
+
+    <div id="grid-view">
+        <div class="filters-container" id="filters">
+            <!-- Filter chips will be injected here -->
+        </div>
+        <div class="toggle-container">
+            <button id="toggle-display-grid" class="google-btn" onclick="toggleUndisplay()">
+                <span id="btn-text-grid">Show All Services</span>
+            </button>
+            <button id="check-status-grid" class="google-btn check-btn" onclick="checkAllStatus()">
+                <span>Check Service Status</span>
+            </button>
+        </div>
+        <main class="container" id="services-container">
+            <!-- Services injection -->
+        </main>
+    </div>
+
+    <div id="topology-view">
+        <div class="topo-container" id="topo-content"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 GotLucky • Material Design Dashboard</p>
+    </footer>
+
+    <script>
+        const commentPalette = [
+            { bg: '#E8F0FE', text: '#1967D2', border: '#185ABC', solid: '#1a73e8' }, // Google Blue
+            { bg: '#E6F4EA', text: '#137333', border: '#137333', solid: '#1e8e3e' }, // Google Green
+            { bg: '#FEEFC3', text: '#B06000', border: '#F29900', solid: '#f9ab00' }, // Google Yellow
+            { bg: '#FCE8E6', text: '#C5221F', border: '#D93025', solid: '#d93025' }, // Google Red
+            { bg: '#F3E5F5', text: '#7B1FA2', border: '#9C27B0', solid: '#9c27b0' }, // Purple
+            { bg: '#E2F7F9', text: '#007B83', border: '#12B5CB', solid: '#12b5cb' }, // Cyan
+            { bg: '#FFF1FF', text: '#D01884', border: '#D01884', solid: '#e91e63' }, // Pink
+        ];
+
+        function getColorForComment(comment) {
+            if (!comment || comment === 'All') return null;
+            let hash = 0;
+            for (let i = 0; i < comment.length; i++) {
+                hash = comment.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % commentPalette.length;
+            return commentPalette[index];
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('global-search').value;
+            renderServices(services);
+            renderTopology();
+        }
+        // 内嵌的数据入口
+        var services = [{"domain": "s1952.nd933.n2123.s98de", "server_name": "Node-A", "icon": "favicons/s1952.nd933.n2123.s98de.png", "internal_addr": "http://172.16.0.4:49295", "chain": "172.16.0.1 (tag-bbb3) ➔ FRP Inbound | config.conf(tag-189c): 26666 ➔ 16666 (tag-e68a) ➔ Node-A (tag-7760) ➔ Backend: http://172.16.0.4:49295", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "http://s1952.nd933.n2123.s98de:20371"}, {"domain": "t080f.xfcd9.n2123.s98de", "server_name": "Node-A", "icon": "favicons/t080f.xfcd9.n2123.s98de.png", "internal_addr": "hello", "chain": "Datafrps ➔ Node-A ➔ hello", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-1", "undisplay": false, "access_url": "http://t080f.xfcd9.n2123.s98de:48448"}, {"domain": "e1dbc.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/e1dbc.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.5:39589", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.6:39589", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://e1dbc.a2fdc.n2123.s98de"}, {"domain": "x3295.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/x3295.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.5", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.6", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://x3295.a2fdc.n2123.s98de"}, {"domain": "w4096.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/w4096.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.4:46699", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.4:46699", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://w4096.a2fdc.n2123.s98de"}, {"domain": "d5227.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/d5227.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.5:57398", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.6:57398", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://d5227.a2fdc.n2123.s98de"}, {"domain": "kf632.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/kf632.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.4:43728", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.4:43728", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://kf632.a2fdc.n2123.s98de"}, {"domain": "sce4e.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/sce4e.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.7", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.7", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://sce4e.a2fdc.n2123.s98de"}, {"domain": "l339a.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/l339a.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.5:36459", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.5:36459", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://l339a.a2fdc.n2123.s98de"}, {"domain": "f4d9d.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/f4d9d.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.8:45507", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.8:45507", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://f4d9d.a2fdc.n2123.s98de"}, {"domain": "m1f2d.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/m1f2d.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.4:48971", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.4:48971", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://m1f2d.a2fdc.n2123.s98de"}, {"domain": "s85e4.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/s85e4.a2fdc.n2123.s98de.png", "internal_addr": "share", "chain": "Group-2 ➔ Node-A ➔ share", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://s85e4.a2fdc.n2123.s98de"}, {"domain": "d1ea3.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/d1ea3.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.4:54305", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.4:54305", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://d1ea3.a2fdc.n2123.s98de"}, {"domain": "naad6.a2fdc.n2123.s98de", "server_name": "Node-A", "icon": "favicons/naad6.a2fdc.n2123.s98de.png", "internal_addr": "http://172.16.0.5:48301", "chain": "Group-2 ➔ Node-A ➔ http://172.16.0.5:48301", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-2", "undisplay": false, "access_url": "https://naad6.a2fdc.n2123.s98de"}, {"domain": "t098f.xfcd9.n2123.s98de", "server_name": "Node-A", "icon": "favicons/t098f.xfcd9.n2123.s98de.png", "internal_addr": "{ClientIP} hello!", "chain": "Datafrps ➔ Node-A ➔ {ClientIP} hello!", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-1", "undisplay": false, "access_url": "https://t098f.xfcd9.n2123.s98de"}, {"domain": "nc97b.b8233.ef9db.tb283", "server_name": "Node-B", "icon": "favicons/nc97b.b8233.ef9db.tb283.png", "internal_addr": "http://172.16.0.1:38689", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:38689", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://nc97b.b8233.ef9db.tb283"}, {"domain": "p7cf4.b8233.ef9db.tb283", "server_name": "Node-B", "icon": "favicons/p7cf4.b8233.ef9db.tb283.png", "internal_addr": "http://172.16.0.1:50375", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:50375", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://p7cf4.b8233.ef9db.tb283"}, {"domain": "nc97b.n2123.s98de", "server_name": "Node-B", "icon": "favicons/nc97b.n2123.s98de.png", "internal_addr": "http://172.16.0.1:38689", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:38689", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://nc97b.n2123.s98de"}, {"domain": "s900b.n2123.s98de", "server_name": "Node-B", "icon": "favicons/s900b.n2123.s98de.png", "internal_addr": "http://172.16.0.1:39955", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:39955", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://s900b.n2123.s98de"}, {"domain": "waf26.b8233.n2123.s98de", "server_name": "Node-B", "icon": "favicons/waf26.b8233.n2123.s98de.png", "internal_addr": "http://172.16.0.1:59288", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:59288", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://waf26.b8233.n2123.s98de"}, {"domain": "s85e4.b8233.ef9db.tb283", "server_name": "Node-B", "icon": "favicons/s85e4.b8233.ef9db.tb283.png", "internal_addr": "share-noaut", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: share-noaut", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://s85e4.b8233.ef9db.tb283"}, {"domain": "f4d9d.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/f4d9d.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.8:39374", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-b197) ➔ http://172.16.0.8:39374", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://f4d9d.b4312.n2123.s98de"}, {"domain": "xd41d.sd04e.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/xd41d.sd04e.b4312.n2123.s98de.png", "internal_addr": "_ADDR...", "chain": "Node-B ➔ _ADDR... ➔ Unknown ➔ Unknown", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "http://xd41d.sd04e.b4312.n2123.s98de"}, {"domain": "e1dbc.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/e1dbc.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.5:39589", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-6015) ➔ http://172.16.0.5:39589", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://e1dbc.b4312.n2123.s98de"}, {"domain": "l339a.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/l339a.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.9:36459", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-1b85) ➔ http://172.16.0.6:36459", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://l339a.b4312.n2123.s98de"}, {"domain": "m7109.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/m7109.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.4:45005", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-039a) ➔ http://172.16.0.4:45005", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://m7109.b4312.n2123.s98de"}, {"domain": "x932f.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/x932f.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.5:20552", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-7d83) ➔ http://172.16.0.5:20552", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://x932f.b4312.n2123.s98de"}, {"domain": "d1ea3.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/d1ea3.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.4:54305", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-a400) ➔ http://172.16.0.4:54305", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://d1ea3.b4312.n2123.s98de"}, {"domain": "d6e9d.b8233.n2123.s98de", "server_name": "Node-B", "icon": "favicons/d6e9d.b8233.n2123.s98de.png", "internal_addr": "http://172.16.0.1:52825", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:52825", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://d6e9d.b8233.n2123.s98de"}, {"domain": "b34be.n2123.s98de", "server_name": "Node-B", "icon": "favicons/b34be.n2123.s98de.png", "internal_addr": "http://172.16.0.1:26946", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:26946", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://b34be.n2123.s98de"}, {"domain": "ca745.b8233.n2123.s98de", "server_name": "Node-B", "icon": "favicons/ca745.b8233.n2123.s98de.png", "internal_addr": "http://172.16.0.1:20822", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:20822", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://ca745.b8233.n2123.s98de"}, {"domain": "kf632.n2123.s98de", "server_name": "Node-B", "icon": "favicons/kf632.n2123.s98de.png", "internal_addr": "http://172.16.0.4:43728", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:43728 ➔ FRP Tunnel | config.conf(tag-310a): ➔ http://172.16.0.4:43728", "frp_info": "FRP Tunnel | config.conf(tag-310a): ➔ http://172.16.0.4:43728", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://kf632.n2123.s98de"}, {"domain": "p4371.n2123.s98de", "server_name": "Node-B", "icon": "favicons/p4371.n2123.s98de.png", "internal_addr": "http://172.16.0.1:46228", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:46228", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://p4371.n2123.s98de"}, {"domain": "ma6aa.n2123.s98de", "server_name": "Node-B", "icon": "favicons/ma6aa.n2123.s98de.png", "internal_addr": "http://172.16.0.4:59390", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:59390 ➔ FRP Tunnel | config.conf(tag-efff): ➔ http://172.16.0.4:59390", "frp_info": "FRP Tunnel | config.conf(tag-efff): ➔ http://172.16.0.4:59390", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://ma6aa.n2123.s98de"}, {"domain": "k1523.n2123.s98de", "server_name": "Node-B", "icon": "favicons/k1523.n2123.s98de.png", "internal_addr": "http://172.16.0.5:18761", "chain": "172.16.0.1 (tag-bbb3) ➔ Node-B (tag-4f67) ➔ Backend: http://172.16.0.6:18761 ➔ FRP Tunnel | config.conf(tag-f7fe): ➔ http://172.16.0.5:18761", "frp_info": "FRP Tunnel | config.conf(tag-f7fe): ➔ http://172.16.0.5:18761", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://k1523.n2123.s98de"}, {"domain": "d1e78.b4312.n2123.s98de", "server_name": "Node-B", "icon": "favicons/d1e78.b4312.n2123.s98de.png", "internal_addr": "http://172.16.0.4:10085", "chain": "Node-B ➔ xd41d.sd04e.b4312.n2123.s98de ➔ Node-D (tag-4ee9) ➔ http://172.16.0.4:10085", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://d1e78.b4312.n2123.s98de:10085"}, {"domain": "xf561.df22c.xe1cc.xd16f", "server_name": "Node-C", "icon": "favicons/xf561.df22c.xe1cc.xd16f.png", "internal_addr": "http://172.16.0.2:45119", "chain": "172.16.0.2 (tag-7244) ➔ Node-C (tag-2bc2) ➔ Backend: http://172.16.0.6:45119", "frp_info": "Data", "ip": "172.16.0.2", "comment": "", "undisplay": false, "access_url": "https://xf561.df22c.xe1cc.xd16f"}, {"domain": "l339a.df22c.xe1cc.xd16f", "server_name": "Node-C", "icon": "favicons/l339a.df22c.xe1cc.xd16f.png", "internal_addr": "http://172.16.0.2:36459", "chain": "172.16.0.2 (tag-7244) ➔ Node-C (tag-2bc2) ➔ Backend: http://172.16.0.6:36459", "frp_info": "Data", "ip": "172.16.0.2", "comment": "", "undisplay": false, "access_url": "https://l339a.df22c.xe1cc.xd16f"}, {"domain": "x3389.b4312.n2123.s98de", "server_name": "Node-D", "icon": "favicons/x3389.b4312.n2123.s98de.png", "internal_addr": "https://x309a.sd04e.v5ed3.n2123.s98de:{STU", "chain": "Node-D ➔ https://x309a.sd04e.v5ed3.n2123.s98de:{STU ➔ Unknown ➔ Unknown", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-3", "undisplay": false, "access_url": "https://x3389.b4312.n2123.s98de:28330"}, {"domain": "x309a.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/x309a.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "...", "chain": "BWG-Stun ➔ Node-D ➔ ...", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://x309a.sd04e.v5ed3.n2123.s98de:20502"}, {"domain": "f4d9d.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/f4d9d.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.8:39374", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.8:39374", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://f4d9d.sd04e.v5ed3.n2123.s98de:28330"}, {"domain": "e1dbc.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/e1dbc.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.5:39589", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.5:39589", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://e1dbc.sd04e.v5ed3.n2123.s98de:19205"}, {"domain": "l339a.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/l339a.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.9:36459", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.6:36459", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://l339a.sd04e.v5ed3.n2123.s98de:24228"}, {"domain": "pcabd.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/pcabd.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.5:50375", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.5:50375", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://pcabd.sd04e.v5ed3.n2123.s98de:24228"}, {"domain": "sce4e.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/sce4e.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.7", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.7", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://sce4e.sd04e.v5ed3.n2123.s98de:24228"}, {"domain": "m7109.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/m7109.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.4:45005", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.4:45005", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://m7109.sd04e.v5ed3.n2123.s98de:28330"}, {"domain": "nd0ca.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/nd0ca.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.5:22607", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.5:22607", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://nd0ca.sd04e.v5ed3.n2123.s98de:19205"}, {"domain": "x932f.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/x932f.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.5:20552", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.5:20552", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://x932f.sd04e.v5ed3.n2123.s98de:24228"}, {"domain": "d1e78.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/d1e78.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.4:10085", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.4:10085", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://d1e78.sd04e.v5ed3.n2123.s98de:51046"}, {"domain": "d1ea3.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/d1ea3.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.4:54305", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.4:54305", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://d1ea3.sd04e.v5ed3.n2123.s98de:19205"}, {"domain": "ca745.sd04e.v5ed3.n2123.s98de", "server_name": "Node-D", "icon": "favicons/ca745.sd04e.v5ed3.n2123.s98de.png", "internal_addr": "http://172.16.0.8:20822", "chain": "BWG-Stun ➔ Node-D ➔ http://172.16.0.8:20822", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-4", "undisplay": true, "access_url": "https://ca745.sd04e.v5ed3.n2123.s98de:24228"}, {"domain": "z3a0d.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/z3a0d.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.10/screen", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.10/screen", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://z3a0d.x5fd0.n2123.s98de:53703"}, {"domain": "d5227.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/d5227.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.5:57398", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.5:57398", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://d5227.x5fd0.n2123.s98de:53703"}, {"domain": "e1dbc.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/e1dbc.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.5:39589", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.5:39589", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://e1dbc.x5fd0.n2123.s98de:53703"}, {"domain": "l339a.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/l339a.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.9:36459", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.6:36459", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://l339a.x5fd0.n2123.s98de:53703"}, {"domain": "md7e1.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/md7e1.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.4:48971", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.4:48971", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://md7e1.x5fd0.n2123.s98de:53703"}, {"domain": "ca745.x5fd0.n2123.s98de", "server_name": "Node-D", "icon": "favicons/ca745.x5fd0.n2123.s98de.png", "internal_addr": "http://172.16.0.4:20822", "chain": "Datafrps ➔ Node-D ➔ http://172.16.0.4:20822", "frp_info": "Data", "ip": "172.16.0.3", "comment": "Group-5", "undisplay": false, "access_url": "https://ca745.x5fd0.n2123.s98de:53703"}, {"domain": "md7e1.n2123.s98de", "server_name": "Node-D", "icon": "favicons/md7e1.n2123.s98de.png", "internal_addr": "http://172.16.0.4:48971", "chain": "172.16.0.1 (tag-bbb3) ➔ FRP Inbound | config.conf(tag-2cf2): 16666 ➔ 16666 ➔ Node-D (tag-ee85) ➔ Backend: http://172.16.0.4:48971", "frp_info": "Data", "ip": "172.16.0.1", "comment": "", "undisplay": false, "access_url": "https://md7e1.n2123.s98de:28330"}, {"domain": "l339a.y2fb1.n2123.s98de", "server_name": "Node-E", "icon": "favicons/l339a.y2fb1.n2123.s98de.png", "internal_addr": "http://172.16.0.3:36459", "chain": "Node-E ➔ http://172.16.0.6:36459", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-6", "undisplay": false, "access_url": "https://l339a.y2fb1.n2123.s98de:17741"}, {"domain": "w2567.y2fb1.n2123.s98de", "server_name": "Node-E", "icon": "favicons/w2567.y2fb1.n2123.s98de.png", "internal_addr": "http://172.16.0.3:59288", "chain": "Node-E ➔ http://172.16.0.6:59288", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-6", "undisplay": false, "access_url": "https://w2567.y2fb1.n2123.s98de:17741"}, {"domain": "ma6aa.y2fb1.n2123.s98de", "server_name": "Node-E", "icon": "favicons/ma6aa.y2fb1.n2123.s98de.png", "internal_addr": "http://172.16.0.4:59390", "chain": "Node-E ➔ http://172.16.0.6:59390 ➔ FRP Tunnel | config.conf(tag-efff): ➔ http://172.16.0.4:59390", "frp_info": "FRP Tunnel | config.conf(tag-efff): ➔ http://172.16.0.4:59390", "ip": "172.16.0.1", "comment": "Group-6", "undisplay": false, "access_url": "https://ma6aa.y2fb1.n2123.s98de:17741"}, {"domain": "e1dbc.y2fb1.n2123.s98de", "server_name": "Node-E", "icon": "favicons/e1dbc.y2fb1.n2123.s98de.png", "internal_addr": "http://172.16.0.5:39589", "chain": "Node-E ➔ http://172.16.0.6:39589 ➔ FRP Tunnel | config.conf(tag-9ff9): ➔ http://172.16.0.5:39589", "frp_info": "FRP Tunnel | config.conf(tag-9ff9): ➔ http://172.16.0.5:39589", "ip": "172.16.0.1", "comment": "Group-6", "undisplay": false, "access_url": "https://e1dbc.y2fb1.n2123.s98de:17741"}, {"domain": "f40b6.y2fb1.n2123.s98de", "server_name": "Node-E", "icon": "favicons/f40b6.y2fb1.n2123.s98de.png", "internal_addr": "http://172.16.0.3:20334", "chain": "Node-E ➔ http://172.16.0.6:20334", "frp_info": "Data", "ip": "172.16.0.1", "comment": "Group-6", "undisplay": false, "access_url": "https://f40b6.y2fb1.n2123.s98de:17741"}];
+        var ipAliases = {"172.16.0.11": "Cloudflare DNS", "172.16.0.12": "Google DNS", "172.16.0.5": "66", "172.16.0.1": "Data", "172.16.0.2": "Dmit", "172.16.0.9": "Openwrt", "172.16.0.4": "DSM", "172.16.0.8": "Data", "172.16.0.3": "Data"};
+        var showAll = false;
+        var activeFilter = 'All';
+        var searchQuery = '';
+
+        function renderFilters(data) {
+            const comments = ['All', ...new Set(data.map(s => s.comment).filter(c => c))];
+            const container = document.getElementById('filters');
+            container.innerHTML = comments.map(comment => {
+                const colors = getColorForComment(comment);
+                let style = '';
+                if (colors) {
+                    if (activeFilter === comment) {
+                        style = `background-color: ${colors.solid}; border-color: ${colors.solid}; color: #fff; box-shadow: 0 2px 4px ${colors.solid}40;`;
+                    } else {
+                        style = `color: ${colors.text}; border-color: ${colors.border}40; background-color: ${colors.bg};`;
+                    }
+                }
+                return `
+                    <button class="filter-chip ${activeFilter === comment ? 'active' : ''}"
+                            style="${style}"
+                            onclick="filterByComment('${comment}')">
+                        ${comment}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderServices(data) {
+            const container = document.getElementById('services-container');
+            if (!container) return; // Ensure container exists for grid view
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 3rem; color: var(--text-dim);">No service data found.</p>';
+                return;
+            }
+
+            // 1. 根据显示/隐藏状态过滤
+            let displayData = showAll ? data : data.filter(s => !s.undisplay);
+
+            // 2. 根据搜索词过滤
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                displayData = displayData.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q) ||
+                    s.server_name.toLowerCase().includes(q) ||
+                    (s.comment && s.comment.toLowerCase().includes(q))
+                );
+            }
+
+            // 3. 根据选中的注释分类过滤
+            if (activeFilter !== 'All') {
+                displayData = displayData.filter(s => s.comment === activeFilter);
+            }
+
+            container.innerHTML = displayData.map((s, index) => {
+                // 生成一个基于域名的唯一 ID，用于状态更新
+                const safeId = btoa(s.domain).replace(/=/g, '');
+                return `
+                <div class="service-card" onclick="toggleDetails(${index})">
+                    <div class="favicon-box">
+                        <img src="${s.icon}" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=64'" alt="" class="favicon">
+                    </div>
+                    <div class="service-info">
+                        <h2 title="${s.domain}">${s.domain}</h2>
+                        <div class="status-row">
+                            <div id="status-${safeId}" class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Status Unknown</span>
+                            </div>
+                            ${s.comment ? (() => {
+                        const colors = getColorForComment(s.comment);
+                        const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}30;` : '';
+                        return `<span class="comment-tag" style="${style}">${s.comment}</span>`;
+                    })() : ''}
+                        </div>
+                    </div>
+                    <a href="${s.access_url}" target="_blank" class="external-link" onclick="event.stopPropagation()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                    </a>
+                    
+                    <div class="details-content" id="details-${index}">
+                        <div class="detail-item">
+                            <strong>Access Path</strong>
+                            <div>${s.chain}</div>
+                        </div>
+                        <div class="detail-item">
+                            <strong>End Address</strong>
+                            <div>${s.internal_addr}</div>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Lucky Instance</strong>
+                            <div>${s.server_name || 'unknown'}</div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function switchView(mode) {
+            const gridBtn = document.getElementById('grid-view-btn');
+            const topoBtn = document.getElementById('topo-view-btn');
+            const gridView = document.getElementById('grid-view');
+            const topoView = document.getElementById('topology-view');
+
+            if (mode === 'grid') {
+                gridBtn.classList.add('active');
+                topoBtn.classList.remove('active');
+                gridView.style.display = 'block';
+                topoView.style.display = 'none';
+            } else {
+                gridBtn.classList.remove('active');
+                topoBtn.classList.add('active');
+                gridView.style.display = 'none';
+                topoView.style.display = 'block';
+                renderTopology();
+            }
+        }
+
+        function renderTopology() {
+            const container = document.getElementById('topo-content');
+            let data = services.filter(s => showAll || !s.undisplay);
+
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                data = data.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q) ||
+                    s.server_name.toLowerCase().includes(q) ||
+                    (s.comment && s.comment.toLowerCase().includes(q))
+                );
+            }
+
+            // Group by End IP (extracted from internal_addr), then by internal_addr
+            const ipGroups = {};
+            data.forEach(s => {
+                let addr = s.internal_addr || 'unknown';
+                // 判断是否是正常的 URL 或 IP 地址
+                let cleanAddr = addr.replace(/^https?:\/\//i, '');
+                let looksLikeIp = /^(?:\d{1,3}\.){3}\d{1,3}/.test(cleanAddr);
+                let looksLikeLocal = cleanAddr.startsWith('localhost') || cleanAddr.startsWith('127.0.0.1');
+                let hasProtocol = addr.includes('://');
+
+                let ip;
+                if (hasProtocol || looksLikeIp || looksLikeLocal) {
+                    // 提取 IP (处理 IPv4 端口，暂不处理复杂的 IPv6 方括号)
+                    ip = cleanAddr.includes(':') ? cleanAddr.split(':')[0] : cleanAddr;
+                } else {
+                    // 文字类（不含网址/IP）统一归类到 TEXT
+                    ip = "TEXT";
+                }
+
+                if (!ipGroups[ip]) ipGroups[ip] = {};
+                if (!ipGroups[ip][addr]) ipGroups[ip][addr] = [];
+                ipGroups[ip][addr].push(s);
+            });
+
+            let html = '<svg class="topo-svg" id="topo-svg"></svg>';
+
+            // Sort by IP
+            const sortedIpEntries = Object.entries(ipGroups).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }));
+
+            sortedIpEntries.forEach(([ip, addrGroups], ipIndex) => {
+                html += `
+                    <div class="ip-group collapsed" id="ip-group-${ipIndex}">
+                        <div class="ip-header" onclick="toggleIpGroup(${ipIndex})">
+                            <div class="ip-node" id="ip-node-${ipIndex}" style="${ip === 'TEXT' ? 'background: var(--google-yellow)' : ''}">
+                                <span>${ip === 'TEXT' ? '文字描述类 (TEXT)' : (ipAliases[ip] || ip)}</span>
+                                ${(ip !== 'TEXT' && ipAliases[ip]) ? `<span style="opacity:0.7; font-size:0.8rem; font-weight:normal; margin-left:6px">(${ip})</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="ip-content">
+                            ${Object.entries(addrGroups).map(([addr, items], gIndex) => `
+                                <div class="topo-group" id="topo-group-${ipIndex}-${gIndex}">
+                                    <div class="end-node" id="end-node-${ipIndex}-${gIndex}">
+                                        <strong>终端节点</strong>
+                                        <span>${addr}</span>
+                                    </div>
+                                    <div class="service-nodes">
+                                        ${items.map((item, i) => `
+                                            <div class="service-mini-card" id="service-node-${ipIndex}-${gIndex}-${i}">
+                                                <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=64'">
+                                                <div class="service-info">
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <h2 style="font-size:0.9rem; margin:0">${item.domain}</h2>
+                                                        ${item.comment ? (() => {
+                        const colors = getColorForComment(item.comment);
+                        const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}20; padding: 1px 6px; font-size: 0.65rem;` : '';
+                        return `<span class="comment-tag" style="${style}">${item.comment}</span>`;
+                    })() : ''}
+                                                    </div>
+                                                    <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            setTimeout(drawTopologyPaths, 100);
+        }
+
+        function toggleIpGroup(index) {
+            const group = document.getElementById(`ip-group-${index}`);
+            group.classList.toggle('collapsed');
+            drawTopologyPaths(); // Re-draw paths after layout change
+        }
+
+        function drawTopologyPaths() {
+            const container = document.getElementById('topo-content');
+            const svg = document.getElementById('topo-svg');
+            if (!svg || !container) return;
+
+            const containerRect = container.getBoundingClientRect();
+            let svgPaths = '';
+
+            // Find all visible IP groups
+            const ipGroups = document.querySelectorAll('.ip-group:not(.collapsed)');
+
+            ipGroups.forEach(group => {
+                const ipIndex = group.id.split('-')[2];
+                const ipNode = document.getElementById(`ip-node-${ipIndex}`);
+                const ipRect = ipNode.getBoundingClientRect();
+
+                // Path from IP node to each End node within this group
+                const endNodes = group.querySelectorAll('.end-node');
+                endNodes.forEach(endNode => {
+                    const gIndex = endNode.id.split('-')[3];
+                    const endRect = endNode.getBoundingClientRect();
+
+                    // IP -> End Node
+                    const startX1 = ipRect.right - containerRect.left;
+                    const startY1 = ipRect.top + ipRect.height / 2 - containerRect.top;
+                    const endX1 = endRect.left - containerRect.left;
+                    const endY1 = endRect.top + endRect.height / 2 - containerRect.top;
+
+                    const d1 = `M ${startX1} ${startY1} C ${startX1 + 40} ${startY1}, ${endX1 - 40} ${endY1}, ${endX1} ${endY1}`;
+                    svgPaths += `<path class="connection-line" d="${d1}" style="stroke: var(--google-green); opacity: 0.3" />`;
+
+                    // End Node -> Service Nodes
+                    const services = document.querySelectorAll(`[id^="service-node-${ipIndex}-${gIndex}-"]`);
+                    services.forEach(serviceNode => {
+                        const serviceRect = serviceNode.getBoundingClientRect();
+
+                        const startX2 = endRect.right - containerRect.left;
+                        const startY2 = endRect.top + endRect.height / 2 - containerRect.top;
+                        const endX2 = serviceRect.left - containerRect.left;
+                        const endY2 = serviceRect.top + serviceRect.height / 2 - containerRect.top;
+
+                        const d2 = `M ${startX2} ${startY2} C ${startX2 + 40} ${startY2}, ${endX2 - 40} ${endY2}, ${endX2} ${endY2}`;
+                        svgPaths += `
+                            <path class="connection-line" d="${d2}" />
+                            <circle r="2.5" class="pulse-circle">
+                                <animateMotion dur="${2 + Math.random() * 2}s" repeatCount="indefinite" path="${d2}" />
+                            </circle>
+                        `;
+                    });
+                });
+            });
+
+            svg.innerHTML = svgPaths;
+        }
+
+        async function checkAllStatus() {
+            const btn = document.getElementById('check-status-grid');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Checking...</span>';
+            btn.disabled = true;
+
+            // 只检查当前可见的服务
+            let visibleData = showAll ? services : services.filter(s => !s.undisplay);
+            if (activeFilter !== 'All') {
+                visibleData = visibleData.filter(s => s.comment === activeFilter);
+            }
+
+            const tasks = visibleData.map(async (s) => {
+                const safeId = btoa(s.domain).replace(/=/g, '');
+                const el = document.getElementById(`status-${safeId}`);
+                if (!el) return;
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒超时
+
+                try {
+                    // 尝试正常 fetch (可能触发 CORS)
+                    let response = await fetch(s.access_url, {
+                        method: 'GET',
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+                    if (response.ok || response.status === 0) {
+                        el.className = 'status-indicator status-online';
+                        el.querySelector('span').textContent = response.status === 0 ? 'Online' : response.status;
+                    } else {
+                        el.className = 'status-indicator status-offline';
+                        el.querySelector('span').textContent = response.status;
+                    }
+                } catch (err) {
+                    clearTimeout(timeoutId);
+
+                    // 如果是 CORS 错误，尝试 no-cors 探测存活
+                    if (err.name !== 'AbortError') {
+                        try {
+                            const controller2 = new AbortController();
+                            const timeoutId2 = setTimeout(() => controller2.abort(), 5000);
+
+                            await fetch(s.access_url, {
+                                method: 'GET',
+                                mode: 'no-cors',
+                                signal: controller2.signal
+                            });
+
+                            clearTimeout(timeoutId2);
+                            el.className = 'status-indicator status-online';
+                            el.querySelector('span').textContent = 'Online';
+                            return;
+                        } catch (err2) {
+                            clearTimeout(timeoutId2);
+                        }
+                    }
+
+                    el.className = 'status-indicator status-offline';
+                    let errorMsg = 'Error';
+                    if (err.name === 'AbortError') errorMsg = 'Timeout';
+                    else if (err.message.includes('Failed to fetch')) errorMsg = 'Fail';
+                    el.querySelector('span').textContent = errorMsg;
+                }
+            });
+
+            await Promise.all(tasks);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        function filterByComment(comment) {
+            activeFilter = comment;
+            renderFilters(services);
+            renderServices(services);
+        }
+
+        function toggleDetails(index) {
+            event.stopPropagation();
+            const el = document.getElementById(`details-${index}`);
+            if (el) el.classList.toggle('active');
+        }
+
+        function toggleUndisplay() {
+            showAll = !showAll;
+            const btnTextG = document.getElementById('btn-text-grid');
+            if (btnTextG) btnTextG.textContent = showAll ? "Hide Special Services" : "Show All Services";
+            renderServices(services);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof services !== 'undefined' && services.length > 0) {
+                renderFilters(services);
+                renderServices(services);
+            }
+        });
+    </script>
+</body>
+
+</html>
