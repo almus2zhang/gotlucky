@@ -1,0 +1,11 @@
+config.json
+config.json.real
+*.log
+__pycache__/
+*.jpg
+favicons/
+output.txt
+.env
+.vscode/
+node_modules/
+.idea/

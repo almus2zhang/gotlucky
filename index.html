@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内网服务导航</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
+
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+            --bg-color: #ffffff;
+            --surface-color: #ffffff;
+            --text-main: #202124;
+            --text-dim: #5f6368;
+            --border-color: #dadce0;
+            --card-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+            --card-shadow-hover: 0 4px 6px 0 rgba(60, 64, 67, 0.3), 0 4px 10px 2px rgba(60, 64, 67, 0.15);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 2rem;
+        }
+
+        header {
+            padding: 4rem 1rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Product Sans', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span:nth-child(1) {
+            color: var(--google-blue);
+        }
+
+        header h1 span:nth-child(2) {
+            color: var(--google-red);
+        }
+
+        header h1 span:nth-child(3) {
+            color: var(--google-yellow);
+        }
+
+        header h1 span:nth-child(4) {
+            color: var(--google-blue);
+        }
+
+        header h1 span:nth-child(5) {
+            color: var(--google-green);
+        }
+
+        header h1 span:nth-child(6) {
+            color: var(--google-red);
+        }
+
+        header p {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .filters-container {
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.5rem 1.2rem;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--google-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .search-box svg {
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .filter-chip {
+            background: #fff;
+            color: var(--text-dim);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 1rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .filter-chip:hover {
+            background-color: #f8f9fa;
+            border-color: var(--google-blue);
+            color: var(--google-blue);
+        }
+
+        .filter-chip.active {
+            background-color: var(--google-blue);
+            color: #fff;
+            border-color: var(--google-blue);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #dadce0;
+        }
+
+        .status-online .status-dot {
+            background-color: var(--google-green);
+            box-shadow: 0 0 8px rgba(52, 168, 83, 0.4);
+        }
+
+        .status-offline .status-dot {
+            background-color: var(--google-red);
+        }
+
+        .status-offline {
+            color: var(--google-red);
+        }
+
+        .status-online {
+            color: var(--google-green);
+        }
+
+        .check-btn {
+            background-color: transparent !important;
+            border-color: var(--google-blue) !important;
+            color: var(--google-blue) !important;
+        }
+
+        .check-btn:hover {
+            background-color: rgba(66, 133, 244, 0.04) !important;
+        }
+
+        .toggle-container {
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .google-btn {
+            background: #fff;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.5rem;
+            border-radius: 24px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .google-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #dfe1e5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: var(--google-blue);
+        }
+
+        .view-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .switch-btn {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch-btn.active {
+            background: var(--google-blue);
+            color: #fff;
+            border-color: var(--google-blue);
+            box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
+        }
+
+        /* Topology View Styles */
+        #topology-view {
+            display: none;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            padding: 2rem;
+            min-height: 800px;
+        }
+
+        .topo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .ip-group {
+            border: 1px solid #e8eaed;
+            border-radius: 16px;
+            padding: 1.2rem;
+            background: #fff;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .ip-header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            user-select: none;
+            min-width: fit-content;
+        }
+
+        .ip-header:hover {
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .ip-node {
+            background: var(--google-green);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 24px;
+            font-weight: 500;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(52, 168, 83, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 5;
+            position: relative;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+            color: var(--text-dim);
+        }
+
+        .ip-group.collapsed .expand-icon {
+            transform: rotate(-90deg);
+        }
+
+        .ip-group.collapsed .ip-content {
+            display: none;
+        }
+
+        .ip-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .topo-group {
+            display: flex;
+            align-items: center;
+            gap: 3.5rem;
+            position: relative;
+        }
+
+        .end-node {
+            background: #fff;
+            border: 2px solid var(--google-blue);
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            z-index: 10;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .end-node strong {
+            display: block;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .end-node span {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .service-nodes {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .service-mini-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            width: fit-content;
+            min-width: 250px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            z-index: 2;
+        }
+
+        .service-mini-card:hover {
+            transform: translateX(5px);
+            border-color: var(--google-blue);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .topo-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            fill: none;
+            stroke: #dfe1e5;
+            stroke-width: 2;
+            transition: stroke 0.3s;
+        }
+
+        .topo-group:hover .connection-line {
+            stroke: var(--google-blue);
+            opacity: 0.4;
+        }
+
+        .pulse-circle {
+            fill: var(--google-blue);
+            filter: blur(2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            padding: 0 1rem;
+        }
+
+        .service-card {
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-height: 80px;
+            flex-wrap: wrap;
+            /* Allowed for details expansion */
+        }
+
+        .service-card:hover {
+            box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.302), 0 4px 8px 3px rgba(60, 64, 67, 0.149);
+            border-color: transparent;
+        }
+
+        .favicon-box {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 1px solid #f1f3f4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .favicon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .service-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .service-info h2 {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .external-link {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5f6368;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .external-link:hover {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            color: var(--google-blue);
+        }
+
+        .comment-tag {
+            background: #f1f3f4;
+            color: #5f6368;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .details-content {
+            display: none;
+            width: 100%;
+            /* Force to next row in flex-wrap container */
+            color: var(--text-dim);
+            padding: 0.8rem 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid var(--google-blue);
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .details-content.active {
+            display: block;
+        }
+
+        .detail-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 4rem 0 2rem;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            <span>G</span><span>o</span><span>t</span><span>L</span><span>u</span><span>c</span><span>k</span><span>y</span>
+        </h1>
+        <p>Your Private Gateway to Local Services</p>
+    </header>
+
+    <div class="search-container">
+        <div class="search-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="global-search" placeholder="搜索服务、域名、终端地址或分组..." oninput="handleSearch()">
+        </div>
+    </div>
+
+    <div class="toggle-container" style="gap: 1rem;">
+        <button id="toggle-display" class="google-btn" onclick="toggleUndisplay()">
+            <span id="btn-text">Show All Services</span>
+        </button>
+        <button id="check-status" class="google-btn check-btn" onclick="checkAllStatus()">
+            <span>Check Service Status</span>
+        </button>
+    </div>
+
+    <div class="view-switcher">
+        <button class="switch-btn active" id="grid-view-btn" onclick="switchView('grid')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            网格视图
+        </button>
+        <button class="switch-btn" id="topo-view-btn" onclick="switchView('topo')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            拓扑连接
+        </button>
+    </div>
+
+    <div id="grid-view">
+        <div class="filters-container" id="filters">
+            <!-- Filter chips will be injected here -->
+        </div>
+        <div class="toggle-container">
+            <button id="toggle-display-grid" class="google-btn" onclick="toggleUndisplay()">
+                <span id="btn-text-grid">Show All Services</span>
+            </button>
+            <button id="check-status-grid" class="google-btn check-btn" onclick="checkAllStatus()">
+                <span>Check Service Status</span>
+            </button>
+        </div>
+        <main class="container" id="services-container">
+            <!-- Services injection -->
+        </main>
+    </div>
+
+    <div id="topology-view">
+        <div class="topo-container" id="topo-content"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 GotLucky • Material Design Dashboard</p>
+    </footer>
+
+    <script>
+        function handleSearch() {
+            searchQuery = document.getElementById('global-search').value;
+            renderServices(services);
+            renderTopology();
+        }
+        // 内嵌的数据入口
+        var services = [{"domain": "app.ext-net.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/app.ext-net.service.net.pillow.png", "internal_addr": "http://10.0.0.222:37656", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Alpha (10.0.0.66) ➔ 后端: http://10.0.0.222:37656", "frp_info": "无", "ip": "1.2.3.4", "access_url": "http://app.ext-net.service.net:38857", "comment": "", "undisplay": false}, {"domain": "try.epsilon.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/try.epsilon.service.net.pillow.png", "internal_addr": "hello", "chain": "Node-C-Frp ➔ Node-Alpha ➔ hello", "frp_info": "无", "ip": "1.2.3.4", "access_url": "http://try.epsilon.service.net:59068", "comment": "Frp-Alpha", "undisplay": false}, {"domain": "emby.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/emby.alpha.service.net.png", "internal_addr": "http://10.0.0.66:58716", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://127.0.0.1:58716", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://emby.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "db.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/db.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.66", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://127.0.0.1", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://db.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "ser-srv.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/ser-srv.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.222:55494", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.222:55494", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://ser-srv.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "nas.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/nas.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.66:43751", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://127.0.0.1:43751", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://nas.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "user.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/user.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.222:63651", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.222:63651", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://user.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "speed.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/speed.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.117", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.117", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://speed.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "666daji.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/666daji.alpha.service.net.pillow.png", "internal_addr": "http://10.0.0.66:32559", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.66:32559", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://666daji.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "worker.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/worker.alpha.service.net.png", "internal_addr": "http://10.0.0.45:47964", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.45:47964", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://worker.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "portal.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/portal.alpha.service.net.png", "internal_addr": "http://10.0.0.222:39825", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.222:39825", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://portal.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "files.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/files.alpha.service.net.pillow.png", "internal_addr": "share", "chain": "Edge-Gateway ➔ Node-Alpha ➔ share", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://files.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "media.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/media.alpha.service.net.png", "internal_addr": "http://10.0.0.222:52423", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.222:52423", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://media.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "note.alpha.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/note.alpha.service.net.png", "internal_addr": "http://10.0.0.66:33534", "chain": "Edge-Gateway ➔ Node-Alpha ➔ http://10.0.0.66:33534", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://note.alpha.service.net", "comment": "Edge-Gateway", "undisplay": false}, {"domain": "test.epsilon.service.net", "server_name": "Node-Alpha", "icon": "assets/icons/test.epsilon.service.net.pillow.png", "internal_addr": "{ClientIP} hello!", "chain": "Node-C-Frp ➔ Node-Alpha ➔ {ClientIP} hello!", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://test.epsilon.service.net", "comment": "Frp-Alpha", "undisplay": false}, {"domain": "stat.dc1.internal.lib", "server_name": "Node-Beta", "icon": "assets/icons/stat.dc1.internal.lib.png", "internal_addr": "http://1.2.3.4:11202", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:11202", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://stat.dc1.internal.lib", "comment": "", "undisplay": false}, {"domain": "data.dc1.internal.lib", "server_name": "Node-Beta", "icon": "assets/icons/data.dc1.internal.lib.png", "internal_addr": "http://1.2.3.4:45280", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:45280", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://data.dc1.internal.lib", "comment": "", "undisplay": false}, {"domain": "stat.service.net", "server_name": "Node-Beta", "icon": "assets/icons/stat.service.net.png", "internal_addr": "http://1.2.3.4:11202", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:11202", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://stat.service.net", "comment": "", "undisplay": false}, {"domain": "cloud.service.net", "server_name": "Node-Beta", "icon": "assets/icons/cloud.service.net.png", "internal_addr": "http://1.2.3.4:59873", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:59873", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://cloud.service.net", "comment": "", "undisplay": false}, {"domain": "serdav.beta.service.net", "server_name": "Node-Beta", "icon": "assets/icons/serdav.beta.service.net.pillow.png", "internal_addr": "http://1.2.3.4:39755", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:39755", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://serdav.beta.service.net", "comment": "", "undisplay": false}, {"domain": "files.dc1.internal.lib", "server_name": "Node-Beta", "icon": "assets/icons/files.dc1.internal.lib.pillow.png", "internal_addr": "share-noaut", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: share-noaut", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://files.dc1.internal.lib", "comment": "", "undisplay": false}, {"domain": "worker.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/worker.beta-g.service.net.png", "internal_addr": "http://10.0.0.45:41322", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (worker.stun.v4.service.net) ➔ http://10.0.0.45:41322", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://worker.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": ".stun.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/default.png", "internal_addr": "_ADDR...", "chain": "Node-Beta ➔ _ADDR... ➔ 未知 ➔ 未知", "frp_info": "无", "ip": "1.2.3.4", "access_url": "http://.stun.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "emby.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/emby.beta-g.service.net.png", "internal_addr": "http://10.0.0.66:58716", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (emby.stun.v4.service.net) ➔ http://10.0.0.66:58716", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://emby.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "666daji.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/666daji.beta-g.service.net.pillow.png", "internal_addr": "http://10.0.0.1:32559", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (666daji.stun.v4.service.net) ➔ http://127.0.0.1:32559", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://666daji.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "mt.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/mt.beta-g.service.net.png", "internal_addr": "http://10.0.0.222:41674", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (mt.stun.v4.service.net) ➔ http://10.0.0.222:41674", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://mt.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "file.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/file.beta-g.service.net.pillow.png", "internal_addr": "http://10.0.0.66:22299", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (file.stun.v4.service.net) ➔ http://10.0.0.66:22299", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://file.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "media.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/media.beta-g.service.net.png", "internal_addr": "http://10.0.0.222:52423", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (media.stun.v4.service.net) ➔ http://10.0.0.222:52423", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://media.beta-g.service.net", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "drop.beta.service.net", "server_name": "Node-Beta", "icon": "assets/icons/drop.beta.service.net.png", "internal_addr": "http://1.2.3.4:34543", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:34543", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://drop.beta.service.net", "comment": "", "undisplay": false}, {"domain": "box.rab.service.net", "server_name": "Node-Beta", "icon": "assets/icons/box.rab.service.net.pillow.png", "internal_addr": "http://1.2.3.4:54556", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:54556", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://box.rab.service.net", "comment": "", "undisplay": false}, {"domain": "couch.beta.service.net", "server_name": "Node-Beta", "icon": "assets/icons/couch.beta.service.net.pillow.png", "internal_addr": "http://1.2.3.4:59886", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:59886", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://couch.beta.service.net", "comment": "", "undisplay": false}, {"domain": "user.service.net", "server_name": "Node-Beta", "icon": "assets/icons/user.service.net.pillow.png", "internal_addr": "http://10.0.0.222:63651", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:63651 ➔ FRP 穿透 | frp-config-beta.toml(speed): ➔ http://10.0.0.222:63651", "frp_info": "FRP 穿透 | frp-config-beta.toml(speed): ➔ http://10.0.0.222:63651", "ip": "1.2.3.4", "access_url": "https://user.service.net", "comment": "", "undisplay": false}, {"domain": "pdf.rab.service.net", "server_name": "Node-Beta", "icon": "assets/icons/pdf.rab.service.net.pillow.png", "internal_addr": "http://1.2.3.4:55823", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:55823", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://pdf.rab.service.net", "comment": "", "undisplay": false}, {"domain": "vault.service.net", "server_name": "Node-Beta", "icon": "assets/icons/vault.service.net.png", "internal_addr": "http://10.0.0.222:49648", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:49648 ➔ FRP 穿透 | frp-config-beta.toml(vaultwarden): ➔ http://10.0.0.222:49648", "frp_info": "FRP 穿透 | frp-config-beta.toml(vaultwarden): ➔ http://10.0.0.222:49648", "ip": "1.2.3.4", "access_url": "https://vault.service.net", "comment": "", "undisplay": false}, {"domain": "task.service.net", "server_name": "Node-Beta", "icon": "assets/icons/task.service.net.png", "internal_addr": "http://10.0.0.66:57593", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Beta (1.2.3.4) ➔ 后端: http://127.0.0.1:57593 ➔ FRP 穿透 | frp-config-beta.toml(komari): ➔ http://10.0.0.66:57593", "frp_info": "FRP 穿透 | frp-config-beta.toml(komari): ➔ http://10.0.0.66:57593", "ip": "1.2.3.4", "access_url": "https://task.service.net", "comment": "", "undisplay": false}, {"domain": "nas.beta-g.service.net", "server_name": "Node-Beta", "icon": "assets/icons/nas.beta-g.service.net.pillow.png", "internal_addr": "http://10.0.0.222:20800", "chain": "Node-Beta ➔ .stun.beta-g.service.net ➔ Node-Delta (nas.stun.v4.service.net) ➔ http://10.0.0.222:20800", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://nas.beta-g.service.net:20800", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "stu.delta.gateway.io", "server_name": "Node-Gamma", "icon": "assets/icons/stu.delta.gateway.io.pillow.png", "internal_addr": "http://2.3.4.5:49994", "chain": "2.3.4.5 (Node-Gamma) ➔ Node-Gamma (2.3.4.5) ➔ 后端: http://127.0.0.1:49994", "frp_info": "无", "ip": "2.3.4.5", "access_url": "https://stu.delta.gateway.io", "comment": "", "undisplay": false}, {"domain": "666daji.delta.gateway.io", "server_name": "Node-Gamma", "icon": "assets/icons/666daji.delta.gateway.io.pillow.png", "internal_addr": "http://2.3.4.5:32559", "chain": "2.3.4.5 (Node-Gamma) ➔ Node-Gamma (2.3.4.5) ➔ 后端: http://127.0.0.1:32559", "frp_info": "无", "ip": "2.3.4.5", "access_url": "https://666daji.delta.gateway.io", "comment": "", "undisplay": false}, {"domain": "*.beta-g.service.net", "server_name": "Node-Delta", "icon": "assets/icons/*.beta-g.service.net.pillow.png", "internal_addr": "https://{1}.stun.v4.service.net:{STU", "chain": "Node-Delta ➔ https://{1}.stun.v4.service.net:{STU ➔ 未知 ➔ 未知", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://*.beta-g.service.net:38857", "comment": "Cloud-Stun", "undisplay": false}, {"domain": "{1}.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/default.png", "internal_addr": "...", "chain": "Cloud-Stun ➔ Node-Delta ➔ ...", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://{1}.stun.v4.service.net:{STU", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "worker.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/worker.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.45:41322", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.45:41322", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://worker.stun.v4.service.net:38857", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "emby.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/emby.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.66:58716", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.66:58716", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://emby.stun.v4.service.net:46123", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "666daji.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/666daji.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.1:32559", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://127.0.0.1:32559", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://666daji.stun.v4.service.net:45365", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "por66.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/por66.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.66:45280", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.66:45280", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://por66.stun.v4.service.net:45365", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "speed.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/speed.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.117", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.117", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://speed.stun.v4.service.net:45365", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "mt.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/mt.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.222:41674", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.222:41674", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://mt.stun.v4.service.net:38857", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "next.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/next.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.66:61379", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.66:61379", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://next.stun.v4.service.net:46123", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "file.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/file.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.66:22299", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.66:22299", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://file.stun.v4.service.net:45365", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "nas.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/nas.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.222:20800", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.222:20800", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://nas.stun.v4.service.net:61921", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "media.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/media.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.222:52423", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.222:52423", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://media.stun.v4.service.net:46123", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "couch.stun.v4.service.net", "server_name": "Node-Delta", "icon": "assets/icons/couch.stun.v4.service.net.pillow.png", "internal_addr": "http://10.0.0.45:59886", "chain": "Cloud-Stun ➔ Node-Delta ➔ http://10.0.0.45:59886", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://couch.stun.v4.service.net:45365", "comment": "Cloud-Stun neiwang", "undisplay": true}, {"domain": "mnu.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/mnu.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.50/screen", "chain": "Relay-Frp ➔ Node-Delta ➔ http://10.0.0.50/screen", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://mnu.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "nas.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/nas.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.66:43751", "chain": "Relay-Frp ➔ Node-Delta ➔ http://10.0.0.66:43751", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://nas.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "emby.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/emby.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.66:58716", "chain": "Relay-Frp ➔ Node-Delta ➔ http://10.0.0.66:58716", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://emby.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "666daji.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/666daji.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.1:32559", "chain": "Relay-Frp ➔ Node-Delta ➔ http://127.0.0.1:32559", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://666daji.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "portal-v2.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/portal-v2.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.222:39825", "chain": "Relay-Frp ➔ Node-Delta ➔ http://10.0.0.222:39825", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://portal-v2.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "couch.myop.service.net", "server_name": "Node-Delta", "icon": "assets/icons/couch.myop.service.net.pillow.png", "internal_addr": "http://10.0.0.222:59886", "chain": "Relay-Frp ➔ Node-Delta ➔ http://10.0.0.222:59886", "frp_info": "无", "ip": "3.4.5.6", "access_url": "https://couch.myop.service.net:myop66", "comment": "Frp-Delta", "undisplay": false}, {"domain": "portal-v2.service.net", "server_name": "Node-Delta", "icon": "assets/icons/portal-v2.service.net.png", "internal_addr": "http://10.0.0.222:39825", "chain": "1.2.3.4 (Node-Beta) ➔ Node-Delta (10.0.0.1) ➔ 后端: http://10.0.0.222:39825", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://portal-v2.service.net:38857", "comment": "", "undisplay": false}, {"domain": "666daji.zeta.service.net", "server_name": "Relay-Server-lucky", "icon": "assets/icons/666daji.zeta.service.net.pillow.png", "internal_addr": "http://3.4.5.6:32559", "chain": "Relay-Server-lucky ➔ http://127.0.0.1:32559", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://666daji.zeta.service.net:58717", "comment": "Relay-Server lucky", "undisplay": false}, {"domain": "ser.zeta.service.net", "server_name": "Relay-Server-lucky", "icon": "assets/icons/ser.zeta.service.net.pillow.png", "internal_addr": "http://3.4.5.6:39755", "chain": "Relay-Server-lucky ➔ http://127.0.0.1:39755", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://ser.zeta.service.net:58717", "comment": "Relay-Server lucky", "undisplay": false}, {"domain": "vault.zeta.service.net", "server_name": "Relay-Server-lucky", "icon": "assets/icons/vault.zeta.service.net.pillow.png", "internal_addr": "http://10.0.0.222:49648", "chain": "Relay-Server-lucky ➔ http://127.0.0.1:49648 ➔ FRP 穿透 | frp-config-zeta.toml(vaultwarden): ➔ http://10.0.0.222:49648", "frp_info": "FRP 穿透 | frp-config-zeta.toml(vaultwarden): ➔ http://10.0.0.222:49648", "ip": "1.2.3.4", "access_url": "https://vault.zeta.service.net:58717", "comment": "Relay-Server lucky", "undisplay": false}, {"domain": "emby.zeta.service.net", "server_name": "Relay-Server-lucky", "icon": "assets/icons/emby.zeta.service.net.pillow.png", "internal_addr": "http://10.0.0.66:58716", "chain": "Relay-Server-lucky ➔ http://127.0.0.1:58716 ➔ FRP 穿透 | frp-config-zeta.toml(emby): ➔ http://10.0.0.66:58716", "frp_info": "FRP 穿透 | frp-config-zeta.toml(emby): ➔ http://10.0.0.66:58716", "ip": "1.2.3.4", "access_url": "https://emby.zeta.service.net:58717", "comment": "Relay-Server lucky", "undisplay": false}, {"domain": "frp.zeta.service.net", "server_name": "Relay-Server-lucky", "icon": "assets/icons/frp.zeta.service.net.pillow.png", "internal_addr": "http://3.4.5.6:54429", "chain": "Relay-Server-lucky ➔ http://127.0.0.1:54429", "frp_info": "无", "ip": "1.2.3.4", "access_url": "https://frp.zeta.service.net:58717", "comment": "Relay-Server lucky", "undisplay": false}];
+        var ipAliases = {"1.1.1.1": "Cloudflare DNS", "8.8.8.8": "Google DNS", "10.0.0.66": "66", "1.2.3.4": "Remote-Alpha", "2.3.4.5": "Remote-Beta", "10.0.0.1": "Main-Router", "10.0.0.222": "Storage", "10.0.0.45": "Worker-Node", "3.4.5.6": "Relay-Server"};
+        var showAll = false;
+        var activeFilter = 'All';
+        var searchQuery = '';
+
+        function renderFilters(data) {
+            const comments = ['All', ...new Set(data.map(s => s.comment).filter(c => c))];
+            const container = document.getElementById('filters');
+            container.innerHTML = comments.map(comment => `
+                <button class="filter-chip ${activeFilter === comment ? 'active' : ''}"
+                        onclick="filterByComment('${comment}')">
+                    ${comment}
+                </button>
+            `).join('');
+        }
+
+        function renderServices(data) {
+            const container = document.getElementById('services-container');
+            if (!container) return; // Ensure container exists for grid view
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 3rem; color: var(--text-dim);">No service data found.</p>';
+                return;
+            }
+
+            // 1. 根据显示/隐藏状态过滤
+            let displayData = showAll ? data : data.filter(s => !s.undisplay);
+
+            // 2. 根据搜索词过滤
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                displayData = displayData.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q) ||
+                    s.server_name.toLowerCase().includes(q) ||
+                    (s.comment && s.comment.toLowerCase().includes(q))
+                );
+            }
+
+            // 3. 根据选中的注释分类过滤
+            if (activeFilter !== 'All') {
+                displayData = displayData.filter(s => s.comment === activeFilter);
+            }
+
+            container.innerHTML = displayData.map((s, index) => {
+                // 生成一个基于域名的唯一 ID，用于状态更新
+                const safeId = btoa(s.domain).replace(/=/g, '');
+                return `
+                <div class="service-card" onclick="toggleDetails(${index})">
+                    <div class="favicon-box">
+                        <img src="${s.icon}" onerror="this.src='https://www.google.com/s2/favicons?domain=service.net&sz=64'" alt="" class="favicon">
+                    </div>
+                    <div class="service-info">
+                        <h2 title="${s.domain}">${s.domain}</h2>
+                        <div class="status-row">
+                            <div id="status-${safeId}" class="status-indicator">
+                                <div class="status-dot"></div>
+                                <span>Status Unknown</span>
+                            </div>
+                            ${s.comment ? `<span class="comment-tag">${s.comment}</span>` : ''}
+                        </div>
+                    </div>
+                    <a href="${s.access_url}" target="_blank" class="external-link" onclick="event.stopPropagation()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                    </a>
+                    
+                    <div class="details-content" id="details-${index}">
+                        <div class="detail-item">
+                            <strong>Access Path</strong>
+                            <div>${s.chain}</div>
+                        </div>
+                        <div class="detail-item">
+                            <strong>End Address</strong>
+                            <div>${s.internal_addr}</div>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Lucky Instance</strong>
+                            <div>${s.server_name || 'unknown'}</div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function switchView(mode) {
+            const gridBtn = document.getElementById('grid-view-btn');
+            const topoBtn = document.getElementById('topo-view-btn');
+            const gridView = document.getElementById('grid-view');
+            const topoView = document.getElementById('topology-view');
+
+            if (mode === 'grid') {
+                gridBtn.classList.add('active');
+                topoBtn.classList.remove('active');
+                gridView.style.display = 'block';
+                topoView.style.display = 'none';
+            } else {
+                gridBtn.classList.remove('active');
+                topoBtn.classList.add('active');
+                gridView.style.display = 'none';
+                topoView.style.display = 'block';
+                renderTopology();
+            }
+        }
+
+        function renderTopology() {
+            const container = document.getElementById('topo-content');
+            let data = services.filter(s => showAll || !s.undisplay);
+
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                data = data.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q) ||
+                    s.server_name.toLowerCase().includes(q) ||
+                    (s.comment && s.comment.toLowerCase().includes(q))
+                );
+            }
+
+            // Group by End IP (extracted from internal_addr), then by internal_addr
+            const ipGroups = {};
+            data.forEach(s => {
+                let addr = s.internal_addr || 'unknown';
+                // 判断是否是正常的 URL 或 IP 地址
+                let cleanAddr = addr.replace(/^https?:\/\//i, '');
+                let looksLikeIp = /^(?:\d{1,3}\.){3}\d{1,3}/.test(cleanAddr);
+                let looksLikeLocal = cleanAddr.startsWith('localhost') || cleanAddr.startsWith('127.0.0.1');
+                let hasProtocol = addr.includes('://');
+
+                let ip;
+                if (hasProtocol || looksLikeIp || looksLikeLocal) {
+                    // 提取 IP (处理 IPv4 端口，暂不处理复杂的 IPv6 方括号)
+                    ip = cleanAddr.includes(':') ? cleanAddr.split(':')[0] : cleanAddr;
+                } else {
+                    // 文字类（不含网址/IP）统一归类到 TEXT
+                    ip = "TEXT";
+                }
+
+                if (!ipGroups[ip]) ipGroups[ip] = {};
+                if (!ipGroups[ip][addr]) ipGroups[ip][addr] = [];
+                ipGroups[ip][addr].push(s);
+            });
+
+            let html = '<svg class="topo-svg" id="topo-svg"></svg>';
+
+            // Sort by IP
+            const sortedIpEntries = Object.entries(ipGroups).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }));
+
+            sortedIpEntries.forEach(([ip, addrGroups], ipIndex) => {
+                html += `
+                    <div class="ip-group collapsed" id="ip-group-${ipIndex}">
+                        <div class="ip-header" onclick="toggleIpGroup(${ipIndex})">
+                            <div class="ip-node" id="ip-node-${ipIndex}" style="${ip === 'TEXT' ? 'background: var(--google-yellow)' : ''}">
+                                <span>${ip === 'TEXT' ? '文字描述类 (TEXT)' : (ipAliases[ip] || ip)}</span>
+                                ${(ip !== 'TEXT' && ipAliases[ip]) ? `<span style="opacity:0.7; font-size:0.8rem; font-weight:normal; margin-left:6px">(${ip})</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="ip-content">
+                            ${Object.entries(addrGroups).map(([addr, items], gIndex) => `
+                                <div class="topo-group" id="topo-group-${ipIndex}-${gIndex}">
+                                    <div class="end-node" id="end-node-${ipIndex}-${gIndex}">
+                                        <strong>终端节点</strong>
+                                        <span>${addr}</span>
+                                    </div>
+                                    <div class="service-nodes">
+                                        ${items.map((item, i) => `
+                                            <div class="service-mini-card" id="service-node-${ipIndex}-${gIndex}-${i}">
+                                                <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.src='https://www.google.com/s2/favicons?domain=service.net&sz=64'">
+                                                <div class="service-info">
+                                                    <h2 style="font-size:0.9rem">${item.domain}</h2>
+                                                    <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            setTimeout(drawTopologyPaths, 100);
+        }
+
+        function toggleIpGroup(index) {
+            const group = document.getElementById(`ip-group-${index}`);
+            group.classList.toggle('collapsed');
+            drawTopologyPaths(); // Re-draw paths after layout change
+        }
+
+        function drawTopologyPaths() {
+            const container = document.getElementById('topo-content');
+            const svg = document.getElementById('topo-svg');
+            if (!svg || !container) return;
+
+            const containerRect = container.getBoundingClientRect();
+            let svgPaths = '';
+
+            // Find all visible IP groups
+            const ipGroups = document.querySelectorAll('.ip-group:not(.collapsed)');
+
+            ipGroups.forEach(group => {
+                const ipIndex = group.id.split('-')[2];
+                const ipNode = document.getElementById(`ip-node-${ipIndex}`);
+                const ipRect = ipNode.getBoundingClientRect();
+
+                // Path from IP node to each End node within this group
+                const endNodes = group.querySelectorAll('.end-node');
+                endNodes.forEach(endNode => {
+                    const gIndex = endNode.id.split('-')[3];
+                    const endRect = endNode.getBoundingClientRect();
+
+                    // IP -> End Node
+                    const startX1 = ipRect.right - containerRect.left;
+                    const startY1 = ipRect.top + ipRect.height / 2 - containerRect.top;
+                    const endX1 = endRect.left - containerRect.left;
+                    const endY1 = endRect.top + endRect.height / 2 - containerRect.top;
+
+                    const d1 = `M ${startX1} ${startY1} C ${startX1 + 40} ${startY1}, ${endX1 - 40} ${endY1}, ${endX1} ${endY1}`;
+                    svgPaths += `<path class="connection-line" d="${d1}" style="stroke: var(--google-green); opacity: 0.3" />`;
+
+                    // End Node -> Service Nodes
+                    const services = document.querySelectorAll(`[id^="service-node-${ipIndex}-${gIndex}-"]`);
+                    services.forEach(serviceNode => {
+                        const serviceRect = serviceNode.getBoundingClientRect();
+
+                        const startX2 = endRect.right - containerRect.left;
+                        const startY2 = endRect.top + endRect.height / 2 - containerRect.top;
+                        const endX2 = serviceRect.left - containerRect.left;
+                        const endY2 = serviceRect.top + serviceRect.height / 2 - containerRect.top;
+
+                        const d2 = `M ${startX2} ${startY2} C ${startX2 + 40} ${startY2}, ${endX2 - 40} ${endY2}, ${endX2} ${endY2}`;
+                        svgPaths += `
+                            <path class="connection-line" d="${d2}" />
+                            <circle r="2.5" class="pulse-circle">
+                                <animateMotion dur="${2 + Math.random() * 2}s" repeatCount="indefinite" path="${d2}" />
+                            </circle>
+                        `;
+                    });
+                });
+            });
+
+            svg.innerHTML = svgPaths;
+        }
+
+        async function checkAllStatus() {
+            const btn = document.getElementById('check-status-grid');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Checking...</span>';
+            btn.disabled = true;
+
+            // 只检查当前可见的服务
+            let visibleData = showAll ? services : services.filter(s => !s.undisplay);
+            if (activeFilter !== 'All') {
+                visibleData = visibleData.filter(s => s.comment === activeFilter);
+            }
+
+            const tasks = visibleData.map(async (s) => {
+                const safeId = btoa(s.domain).replace(/=/g, '');
+                const el = document.getElementById(`status-${safeId}`);
+                if (!el) return;
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒超时
+
+                try {
+                    // 尝试正常 fetch (可能触发 CORS)
+                    let response = await fetch(s.access_url, {
+                        method: 'GET',
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+                    if (response.ok || response.status === 0) {
+                        el.className = 'status-indicator status-online';
+                        el.querySelector('span').textContent = response.status === 0 ? 'Online' : response.status;
+                    } else {
+                        el.className = 'status-indicator status-offline';
+                        el.querySelector('span').textContent = response.status;
+                    }
+                } catch (err) {
+                    clearTimeout(timeoutId);
+
+                    // 如果是 CORS 错误，尝试 no-cors 探测存活
+                    if (err.name !== 'AbortError') {
+                        try {
+                            const controller2 = new AbortController();
+                            const timeoutId2 = setTimeout(() => controller2.abort(), 5000);
+
+                            await fetch(s.access_url, {
+                                method: 'GET',
+                                mode: 'no-cors',
+                                signal: controller2.signal
+                            });
+
+                            clearTimeout(timeoutId2);
+                            el.className = 'status-indicator status-online';
+                            el.querySelector('span').textContent = 'Online';
+                            return;
+                        } catch (err2) {
+                            clearTimeout(timeoutId2);
+                        }
+                    }
+
+                    el.className = 'status-indicator status-offline';
+                    let errorMsg = 'Error';
+                    if (err.name === 'AbortError') errorMsg = 'Timeout';
+                    else if (err.message.includes('Failed to fetch')) errorMsg = 'Fail';
+                    el.querySelector('span').textContent = errorMsg;
+                }
+            });
+
+            await Promise.all(tasks);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        function filterByComment(comment) {
+            activeFilter = comment;
+            renderFilters(services);
+            renderServices(services);
+        }
+
+        function toggleDetails(index) {
+            event.stopPropagation();
+            const el = document.getElementById(`details-${index}`);
+            if (el) el.classList.toggle('active');
+        }
+
+        function toggleUndisplay() {
+            showAll = !showAll;
+            const btnTextG = document.getElementById('btn-text-grid');
+            if (btnTextG) btnTextG.textContent = showAll ? "Hide Special Services" : "Show All Services";
+            renderServices(services);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof services !== 'undefined' && services.length > 0) {
+                renderFilters(services);
+                renderServices(services);
+            }
+        });
+    </script>
+</body>
+
+</html>

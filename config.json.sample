@@ -1,0 +1,91 @@
+{
+    "ip_aliases": {
+        "1.1.1.1": "Cloudflare DNS",
+        "8.8.8.8": "Google DNS",
+        "10.0.0.66": "Home-NAS",
+        "1.2.3.4": "Cloud-Node-Alpha",
+        "2.3.4.5": "Cloud-Node-Beta",
+        "10.0.0.114": "Main-Router",
+        "10.0.0.222": "Media-Server",
+        "10.0.0.45": "Dev-Worker",
+        "3.4.5.6": "Remote-Relay"
+    },
+    "lucky_servers": [
+        {
+            "name": "Node-66",
+            "url": "https://daji666.node66.example.com/",
+            "user": "admin",
+            "pass": "YOUR_PASSWORD_HERE",
+            "myip": "10.0.0.66"
+        },
+        {
+            "name": "Cloud-Alpha",
+            "url": "http://1.2.3.4:16601/666",
+            "user": "admin",
+            "pass": "YOUR_PASSWORD_HERE"
+        },
+        {
+            "name": "Cloud-Beta",
+            "url": "https://2.3.4.5:16601/666",
+            "user": "admin",
+            "pass": "YOUR_PASSWORD_HERE"
+        },
+        {
+            "name": "Router-Lucky",
+            "url": "http://10.0.0.114:16601/666",
+            "user": "admin",
+            "pass": "YOUR_PASSWORD_HERE",
+            "myip": "10.0.0.114"
+        },
+        {
+            "name": "Relay-Lucky",
+            "url": "https://lucky.relay.example.com:55555/666",
+            "user": "admin",
+            "pass": "YOUR_PASSWORD_HERE"
+        }
+    ],
+    "static_mappings": [
+        {
+            "pattern": ".*\\.node66\\.example\\.com",
+            "description": "Provider-A ➔ {server_name} ➔ {internal_addr}",
+            "comment": "External-Gateway",
+            "TLS": true
+        },
+        {
+            "pattern": ".*\\.stun\\.ipv4\\.example\\.com",
+            "description": "STUN-INTERNAL ➔ {server_name} ➔ {internal_addr}",
+            "comment": "Internal-Stun",
+            "undisplay": true
+        },
+        {
+            "pattern": ".*\\.alpha\\.example\\.com",
+            "description": "{server_name} ➔ {internal_addr} ➔ {stun_server_name} ➔ {stun_internal_addr}",
+            "comment": "Global-Stun",
+            "stun_route": {
+                "\\.alpha\\.example\\.com": "\\.stun\\.v4\\.example\\.com"
+            }
+        },
+        {
+            "pattern": ".*\\.router\\.example\\.com",
+            "description": "FRP-Relay ➔ {server_name} ➔ {internal_addr}",
+            "comment": "Router-Link",
+            "undisplay": false,
+            "port_map": {
+                "16666": "11466"
+            }
+        },
+        {
+            "pattern": ".*\\.relay\\.example\\.com",
+            "description": "{server_name} ➔ {internal_addr}",
+            "comment": "Relay-Link",
+            "undisplay": false,
+            "port_map": {
+                "16666": "55555"
+            }
+        }
+    ],
+    "cloudflare": {
+        "api_token": "YOUR_CLOUDFLARE_API_TOKEN_HERE"
+    },
+    "systemd_dir": "/lib/systemd/system"
+}
