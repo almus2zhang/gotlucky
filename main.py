@@ -80,12 +80,12 @@ async def main():
         server_name = ls['server_name']
         lucky_ip = lucky_server_ips.get(server_name)
         
-        if (i+1) % 10 == 0 or i == 0:
-            print(f"[*] 正在处理第 {i+1}/{len(lucky_services)} 个服务: {raw_domain}")
-
         # A. 解析域名真实 IP
         domain = raw_domain.split(':')[0]
         frontend_port = raw_domain.split(':')[1] if ':' in raw_domain else None
+
+        if (i+1) % 10 == 0 or i == 0:
+            print(f"[*] 正在处理第 {i+1}/{len(lucky_services)} 个服务: {raw_domain}")
         
         # 优先用 CF 缓存查询，拿不到再用系统 DNS
         cf_rec = resolve_domain_with_cache(domain)
@@ -94,22 +94,11 @@ async def main():
             if cf_rec.get('proxied'):
                 mapping_provider = "CF proxy"
             else:
-                # 非代理 IP，尝试匹配 Lucky 服务器列表
-                mapping_provider = "Direct"
-                for s_name, s_ip in lucky_server_ips.items():
-                    if ip == s_ip:
-                        mapping_provider = s_name
-                        break
+                mapping_provider = config.get("ip_aliases", {}).get(ip, "Direct")
         else:
             ip = resolve_domain(domain)
-            # 系统解析出的 IP 也尝试匹配服务器
-            mapping_provider = get_mapping_type(ip)
-            for s_name, s_ip in lucky_server_ips.items():
-                if ip == s_ip:
-                    mapping_provider = s_name
-                    break
+            mapping_provider = config.get("ip_aliases", {}).get(ip, get_mapping_type(ip))
         
-        # 如果依然是默认的 get_mapping_type 结果且没匹配上，保持 mapping_provider 不变
         
         # B. 检查静态映射
         matched_sm = None
@@ -117,6 +106,7 @@ async def main():
             if re.match(sm['pattern'], domain):
                 matched_sm = sm
                 break
+        
 
         # C. 确定访问端口
         display_port = frontend_port
@@ -129,6 +119,59 @@ async def main():
                 display_port = p_map[str(local_p)]
 
         # D. 深度路径溯源 (FRP 关联)
+        
+        # D.1 前置 FRP (Entry ➔ FRPS ➔ Lucky)
+        matching_pre_frp = None
+        path_pre_frp_info = ""
+        target_fp = str(frontend_port) if frontend_port else ("443" if ls.get("protocol") == "https" else "80")
+
+
+        # 重点：如果服务没有匹配 static_mappings，且 Lucky 本身在内网，探测 Pre-Lucky FRP
+        if not matched_sm:
+            for fm in all_frp_mappings:
+                f_server = fm.get('server_addr', '').lower()
+                p_remote = str(fm.get('remote_port'))
+                l_ip = fm.get('local_ip', '').lower()
+                l_port = str(fm.get('local_port'))
+                
+                # 智能 IP 匹配：如果 server_addr 是域名，尝试解析
+                f_server_ip = f_server
+                if not re.match(r'^\d+\.\d+\.\d+\.\d+$', f_server):
+                    from cf_dns import resolve_domain_with_cache
+                    cf_rec_s = resolve_domain_with_cache(f_server)
+                    if cf_rec_s: f_server_ip = cf_rec_s['content']
+                    else:
+                        from utils import resolve_domain as rd
+                        f_server_ip = rd(f_server)
+
+                # 匹配逻辑：
+                # 1. FRP 服务的 server_addr 匹配我们解析到的域名的 IP (即 FRPS)
+                # 2. FRP 的 remote_port OR local_port 匹配前端访问端口
+                # 3. FRP 的 local_ip 指向当前 Lucky 的 IP (或回环地址)
+                ip_match = (f_server_ip.lower() == ip.lower())
+                port_match = (p_remote == target_fp or l_port == target_fp)
+                local_match = (l_ip in ['127.0.0.1', 'localhost', '0.0.0.0', (lucky_ip or "").lower()])
+                
+
+                if ip_match and port_match and local_match:
+                    matching_pre_frp = fm
+                    r_name = fm.get('name', '未命名')
+                    source = fm.get('source_file', '未知')
+                    
+                    # 构造更准确的描述
+                    if l_port == target_fp and p_remote != target_fp:
+                        path_pre_frp_info = f"FRP 入站 | {source}({r_name}): {p_remote} ➔ {l_port} (内网Lucky)"
+                    else:
+                        path_pre_frp_info = f"FRP 入站 | {source}({r_name}): {p_remote} ➔ {l_port}"
+                    
+                    # 关键修复：既然是通过 FRP 入站，对外访问端口必须是 remote_port
+                    display_port = p_remote
+                        
+                    print(f"  [*] 匹配 Pre-Lucky FRP: {path_pre_frp_info} (更新对外端口为: {display_port})")
+                    break
+            
+
+        # D.2 后置 FRP (Lucky ➔ 后端服务)
         matching_frp = None
         path_frp_info = ""
         
@@ -268,6 +311,8 @@ async def main():
         # H. 描述链条构建
         path_segments = []
         path_segments.append(f"{ip} ({mapping_provider})")
+        if path_pre_frp_info:
+            path_segments.append(path_pre_frp_info)
         path_segments.append(f"{server_name} ({lucky_ip})")
         path_segments.append(f"后端: {internal_addr}")
         if matching_frp:

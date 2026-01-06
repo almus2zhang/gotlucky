@@ -654,6 +654,26 @@
     </footer>
 
     <script>
+        const commentPalette = [
+            { bg: '#E8F0FE', text: '#1967D2', border: '#185ABC', solid: '#1a73e8' }, // Google Blue
+            { bg: '#E6F4EA', text: '#137333', border: '#137333', solid: '#1e8e3e' }, // Google Green
+            { bg: '#FEEFC3', text: '#B06000', border: '#F29900', solid: '#f9ab00' }, // Google Yellow
+            { bg: '#FCE8E6', text: '#C5221F', border: '#D93025', solid: '#d93025' }, // Google Red
+            { bg: '#F3E5F5', text: '#7B1FA2', border: '#9C27B0', solid: '#9c27b0' }, // Purple
+            { bg: '#E2F7F9', text: '#007B83', border: '#12B5CB', solid: '#12b5cb' }, // Cyan
+            { bg: '#FFF1FF', text: '#D01884', border: '#D01884', solid: '#e91e63' }, // Pink
+        ];
+
+        function getColorForComment(comment) {
+            if (!comment || comment === 'All') return null;
+            let hash = 0;
+            for (let i = 0; i < comment.length; i++) {
+                hash = comment.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % commentPalette.length;
+            return commentPalette[index];
+        }
+
         function handleSearch() {
             searchQuery = document.getElementById('global-search').value;
             renderServices(services);
@@ -669,12 +689,24 @@
         function renderFilters(data) {
             const comments = ['All', ...new Set(data.map(s => s.comment).filter(c => c))];
             const container = document.getElementById('filters');
-            container.innerHTML = comments.map(comment => `
-                <button class="filter-chip ${activeFilter === comment ? 'active' : ''}"
-                        onclick="filterByComment('${comment}')">
-                    ${comment}
-                </button>
-            `).join('');
+            container.innerHTML = comments.map(comment => {
+                const colors = getColorForComment(comment);
+                let style = '';
+                if (colors) {
+                    if (activeFilter === comment) {
+                        style = `background-color: ${colors.solid}; border-color: ${colors.solid}; color: #fff; box-shadow: 0 2px 4px ${colors.solid}40;`;
+                    } else {
+                        style = `color: ${colors.text}; border-color: ${colors.border}40; background-color: ${colors.bg};`;
+                    }
+                }
+                return `
+                    <button class="filter-chip ${activeFilter === comment ? 'active' : ''}"
+                            style="${style}"
+                            onclick="filterByComment('${comment}')">
+                        ${comment}
+                    </button>
+                `;
+            }).join('');
         }
 
         function renderServices(data) {
@@ -720,7 +752,11 @@
                                 <div class="status-dot"></div>
                                 <span>Status Unknown</span>
                             </div>
-                            ${s.comment ? `<span class="comment-tag">${s.comment}</span>` : ''}
+                            ${s.comment ? (() => {
+                        const colors = getColorForComment(s.comment);
+                        const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}30;` : '';
+                        return `<span class="comment-tag" style="${style}">${s.comment}</span>`;
+                    })() : ''}
                         </div>
                     </div>
                     <a href="${s.access_url}" target="_blank" class="external-link" onclick="event.stopPropagation()">
@@ -833,7 +869,14 @@
                                             <div class="service-mini-card" id="service-node-${ipIndex}-${gIndex}-${i}">
                                                 <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=64'">
                                                 <div class="service-info">
-                                                    <h2 style="font-size:0.9rem">${item.domain}</h2>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <h2 style="font-size:0.9rem; margin:0">${item.domain}</h2>
+                                                        ${item.comment ? (() => {
+                        const colors = getColorForComment(item.comment);
+                        const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}20; padding: 1px 6px; font-size: 0.65rem;` : '';
+                        return `<span class="comment-tag" style="${style}">${item.comment}</span>`;
+                    })() : ''}
+                                                    </div>
                                                     <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
                                                 </div>
                                             </div>

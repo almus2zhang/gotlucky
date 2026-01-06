@@ -9,3 +9,6 @@ output.txt
 .vscode/
 node_modules/
 .idea/
+anonymize_data.py
+index2.html
+index.html
