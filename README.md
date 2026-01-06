@@ -20,7 +20,7 @@
 ```
 
 ### 2. Lucky 服务器配置 (`lucky_servers`)
-程序会通过 Playwright 自动登录这些服务器并抓取所有的 Web 服务规则。
+程序会通过 Playwright 自动登录这些服务器并抓取所有的 Web 服务规则。这部分是整个工程处理的入口，也就是只分析在lucky里面的服务。
 - `name`: 服务器展示名称。
 - `url`: Lucky 管理界面的访问地址。
 - `user`: 登录用户名。
@@ -92,19 +92,24 @@
 - **效果**：终端节点会显示为 `http://10.0.0.100:5000`，使您可以一眼看出服务运行在哪台物理设备上。
 
 ## 运行环境与执行
-
-1. **环境准备**:
+1. **拉取本项目**
+  在运行frpc的内网机器上拉取本项目
+   ```bash
+   git clone https://github.com/almus2zhang/gotlucky.git
+   cd gotlucky
+   ```
+2. **环境准备**:
    ```bash
    pip install -r requirements.txt
    playwright install chromium
    ```
 
-2. **生成页面**:
+3. **生成页面**:
    ```bash
    更具自己的情况修改config.json
    python main.py
    ```
    - 使用 `python main.py skipicon` 可跳过 Favicon 下载，加快生成速度。
 
-3. **查看结果**:
+4. **查看结果**:
    打开生成的 `index.html` 即可看到完整的导航面板。
