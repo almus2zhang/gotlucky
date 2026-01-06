@@ -1,6 +1,9 @@
 # GotLucky - 内网服务自动化导航系统
 
+> 🚀 **[在线演示 (Live Demo)](https://git.nasnas.site/gotlucky/demo/index.html)**
+
 本项目通过自动抓取 Lucky 服务器、扫描 FRP 穿透配置以及结合 Cloudflare DNS 信息，自动生成一个美观、交互式的内网服务导航页面。支持网格视图和拓扑连接视图，并具备实时全文搜索功能。
+程序入口是扫描lucky服务器的web服务配置。
 
 ## 配置文件设定 (`config.json`)
 
@@ -98,6 +101,7 @@
 
 2. **生成页面**:
    ```bash
+   更具自己的情况修改config.json
    python main.py
    ```
    - 使用 `python main.py skipicon` 可跳过 Favicon 下载，加快生成速度。
