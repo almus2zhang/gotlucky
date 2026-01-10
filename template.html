@@ -26,6 +26,13 @@
             --card-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
             --card-shadow-hover: 0 4px 6px 0 rgba(60, 64, 67, 0.3), 0 4px 10px 2px rgba(60, 64, 67, 0.15);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Outfit', 'Roboto', 'Noto Sans SC', sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --header-padding: 2rem 1rem 1rem;
+            }
         }
 
         * {
@@ -43,13 +50,13 @@
         }
 
         header {
-            padding: 4rem 1rem 2rem;
+            padding: var(--header-padding, 4rem 1rem 2rem);
             text-align: center;
         }
 
         header h1 {
-            font-family: 'Product Sans', sans-serif;
-            font-size: 2.5rem;
+            font-family: 'Product Sans', 'Outfit', sans-serif;
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
             margin-bottom: 0.5rem;
             letter-spacing: -0.5px;
         }
@@ -231,6 +238,55 @@
             justify-content: center;
             gap: 1rem;
             margin-bottom: 2rem;
+            margin-top: -0.5rem;
+        }
+
+        .filter-prompt {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .view-switcher {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0 2rem;
+                gap: 0.5rem;
+            }
+
+            .switch-btn {
+                justify-content: center;
+            }
+
+            .filters-container {
+                padding: 0 1rem;
+            }
+
+            .toggle-container {
+                flex-direction: column;
+                width: 100%;
+                padding: 0 2rem;
+            }
+
+            .google-btn {
+                width: 100%;
+                justify-content: center;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .controls-wrapper {
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
         }
 
         .switch-btn {
@@ -261,7 +317,7 @@
             max-width: 1600px;
             margin: 0 auto;
             position: relative;
-            padding: 2rem;
+            padding: 1rem;
             min-height: 800px;
         }
 
@@ -272,17 +328,60 @@
             position: relative;
         }
 
+        #topo-roots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f1f3f4;
+            position: sticky;
+            top: 0;
+            background: var(--bg-color);
+            z-index: 20;
+        }
+
+        #topo-stage {
+            min-height: 400px;
+            position: relative;
+        }
+
+        @media (max-width: 600px) {
+            #topo-roots {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                /* Firefox */
+            }
+
+            #topo-roots::-webkit-scrollbar {
+                display: none;
+                /* Safari/Chrome */
+            }
+
+            .ip-group {
+                flex-shrink: 0;
+            }
+        }
+
         .ip-group {
             border: 1px solid #e8eaed;
-            border-radius: 16px;
-            padding: 1.2rem;
+            border-radius: 8px;
             background: #fff;
             transition: var(--transition);
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 1.5rem;
-            position: relative;
+            cursor: pointer;
+        }
+
+        .ip-group:hover {
+            border-color: var(--google-blue);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ip-group.active {
+            border-color: var(--google-blue);
+            background-color: #f8fbff;
+            box-shadow: 0 0 0 2px var(--google-blue);
         }
 
         .ip-header {
@@ -290,25 +389,22 @@
             flex-direction: row;
             align-items: center;
             gap: 0.8rem;
-            cursor: pointer;
-            padding: 0.4rem 0.8rem;
             user-select: none;
             min-width: fit-content;
         }
 
         .ip-header:hover {
-            background: #f8f9fa;
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.02);
         }
 
         .ip-node {
             background: var(--google-green);
             color: #fff;
-            padding: 0.6rem 1.2rem;
-            border-radius: 24px;
-            font-weight: 500;
-            font-size: 1rem;
-            box-shadow: 0 2px 4px rgba(52, 168, 83, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -321,26 +417,42 @@
             color: var(--text-dim);
         }
 
-        .ip-group.collapsed .expand-icon {
-            transform: rotate(-90deg);
-        }
 
-        .ip-group.collapsed .ip-content {
-            display: none;
-        }
 
         .ip-content {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            flex: 1;
+            width: 100%;
         }
 
         .topo-group {
             display: flex;
-            align-items: center;
-            gap: 3.5rem;
+            align-items: flex-start;
+            gap: 3rem;
             position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .topo-group {
+                flex-direction: column;
+                gap: 1.5rem;
+                padding-left: 1.5rem;
+                border-left: 2px solid #f1f3f4;
+            }
+
+            .service-nodes {
+                width: 100%;
+            }
+
+            .service-mini-card {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .topo-svg {
+                display: none !important;
+            }
         }
 
         .end-node {
@@ -385,12 +497,16 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: var(--transition);
             z-index: 2;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
 
         .service-mini-card:hover {
             transform: translateX(5px);
             border-color: var(--google-blue);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f8fbff;
         }
 
         .topo-svg {
@@ -567,11 +683,148 @@
             }
         }
 
-        footer {
-            margin-top: auto;
-            padding: 4rem 0 2rem;
+        /* FRP & Lucky View Styles */
+        #frp-view,
+        #lucky-view {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .frp-table thead {
+                display: none;
+            }
+
+            .frp-table,
+            .frp-table tbody,
+            .frp-table tr,
+            .frp-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .frp-table tr {
+                margin-bottom: 1rem;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                background: #fff !important;
+                /* Override server grouping color for card style */
+            }
+
+            .frp-table td {
+                border: none;
+                padding: 0.5rem 1rem;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+                border-bottom: 1px solid #f1f3f4;
+            }
+
+            .frp-table td:last-child {
+                border-bottom: none;
+            }
+
+            .frp-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 1rem;
+                width: 45%;
+                font-weight: 600;
+                text-align: left;
+                color: var(--text-dim);
+            }
+
+            .frp-table .frp-server-header td {
+                padding-left: 1rem;
+                text-align: left;
+            }
+
+            .frp-table .frp-server-header td::before {
+                display: none;
+            }
+
+            .frp-table td[data-label=""] {
+                display: none;
+            }
+        }
+
+        .frp-table-container {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .frp-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .frp-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            font-weight: 600;
             color: var(--text-dim);
-            font-size: 0.875rem;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .frp-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 0.9rem;
+        }
+
+        .frp-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .frp-table tr:hover {
+            filter: contrast(110%) brightness(95%);
+        }
+
+        .frp-server-header {
+            background: #f1f3f4 !important;
+            font-weight: bold;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .frp-server-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .frp-name {
+            font-weight: 600;
+            color: var(--google-blue);
+        }
+
+        .frp-addr {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .frp-source {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            background: #f1f3f4;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .frp-arrow {
+            color: var(--google-green);
+            margin: 0 8px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -593,15 +846,6 @@
             </svg>
             <input type="text" id="global-search" placeholder="搜索服务、域名、终端地址或分组..." oninput="handleSearch()">
         </div>
-    </div>
-
-    <div class="toggle-container" style="gap: 1rem;">
-        <button id="toggle-display" class="google-btn" onclick="toggleUndisplay()">
-            <span id="btn-text">Show All Services</span>
-        </button>
-        <button id="check-status" class="google-btn check-btn" onclick="checkAllStatus()">
-            <span>Check Service Status</span>
-        </button>
     </div>
 
     <div class="view-switcher">
@@ -626,20 +870,50 @@
             </svg>
             拓扑连接
         </button>
+        <button class="switch-btn" id="frp-view-btn" onclick="switchView('frp')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+            FRP 配置
+        </button>
+        <button class="switch-btn" id="lucky-view-btn" onclick="switchView('lucky')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+            Lucky 服务
+        </button>
     </div>
 
-    <div id="grid-view">
+    <div class="controls-wrapper">
         <div class="filters-container" id="filters">
             <!-- Filter chips will be injected here -->
         </div>
-        <div class="toggle-container">
-            <button id="toggle-display-grid" class="google-btn" onclick="toggleUndisplay()">
-                <span id="btn-text-grid">Show All Services</span>
+
+        <div class="toggle-container" style="gap: 1rem; margin-top: -0.5rem;">
+            <button id="toggle-display" class="google-btn" onclick="toggleUndisplay()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-right: 8px; vertical-align: middle;">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span id="btn-text">显示隐藏的服务</span>
             </button>
-            <button id="check-status-grid" class="google-btn check-btn" onclick="checkAllStatus()">
-                <span>Check Service Status</span>
+            <button id="check-status" class="google-btn check-btn" onclick="checkAllStatus()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-right: 8px; vertical-align: middle;">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                <span id="status-btn-text">检查服务状态</span>
             </button>
         </div>
+    </div>
+
+    <div id="grid-view">
         <main class="container" id="services-container">
             <!-- Services injection -->
         </main>
@@ -649,19 +923,59 @@
         <div class="topo-container" id="topo-content"></div>
     </div>
 
+    <div id="frp-view">
+        <div class="frp-table-container">
+            <table class="frp-table">
+                <thead>
+                    <tr>
+                        <th>条目名称</th>
+                        <th>内网地址 (Local)</th>
+                        <th></th>
+                        <th>穿透地址 (Remote/FRPS)</th>
+                        <th>配置文件</th>
+                    </tr>
+                </thead>
+                <tbody id="frp-container">
+                    <!-- FRP mappings injection -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="lucky-view" style="display: none;">
+        <div class="frp-table-container">
+            <table class="frp-table">
+                <thead>
+                    <tr>
+                        <th>前端域名</th>
+                        <th></th>
+                        <th>后端终端地址</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody id="lucky-container">
+                    <!-- Lucky services injection -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 GotLucky • Material Design Dashboard</p>
     </footer>
 
     <script>
         const commentPalette = [
-            { bg: '#E8F0FE', text: '#1967D2', border: '#185ABC', solid: '#1a73e8' }, // Google Blue
-            { bg: '#E6F4EA', text: '#137333', border: '#137333', solid: '#1e8e3e' }, // Google Green
-            { bg: '#FEEFC3', text: '#B06000', border: '#F29900', solid: '#f9ab00' }, // Google Yellow
-            { bg: '#FCE8E6', text: '#C5221F', border: '#D93025', solid: '#d93025' }, // Google Red
+            { bg: '#E8F0FE', text: '#1967D2', border: '#185ABC', solid: '#1a73e8' }, // Blue
+            { bg: '#E6F4EA', text: '#137333', border: '#137333', solid: '#1e8e3e' }, // Green
+            { bg: '#FFF4E5', text: '#B06000', border: '#F29900', solid: '#ff9800' }, // Orange
+            { bg: '#FCE8E6', text: '#C5221F', border: '#D93025', solid: '#d93025' }, // Red
             { bg: '#F3E5F5', text: '#7B1FA2', border: '#9C27B0', solid: '#9c27b0' }, // Purple
-            { bg: '#E2F7F9', text: '#007B83', border: '#12B5CB', solid: '#12b5cb' }, // Cyan
-            { bg: '#FFF1FF', text: '#D01884', border: '#D01884', solid: '#e91e63' }, // Pink
+            { bg: '#E0F7FA', text: '#006064', border: '#00ACC1', solid: '#00bcd4' }, // Cyan
+            { bg: '#FCE4EC', text: '#880E4F', border: '#D81B60', solid: '#e91e63' }, // Pink
+            { bg: '#E8EAF6', text: '#1A237E', border: '#3949AB', solid: '#3f51b5' }, // Indigo
+            { bg: '#EFEBE9', text: '#3E2723', border: '#6D4C41', solid: '#795548' }, // Brown
+            { bg: '#F1F8E9', text: '#33691E', border: '#7CB342', solid: '#8bc34a' }, // Light Green
         ];
 
         function getColorForComment(comment) {
@@ -678,10 +992,13 @@
             searchQuery = document.getElementById('global-search').value;
             renderServices(services);
             renderTopology();
+            renderFrpView();
+            renderLuckyView();
         }
         // 内嵌的数据入口
         var services = [];
         var ipAliases = {};
+        var frp_mappings = [];
         var showAll = false;
         var activeFilter = 'All';
         var searchQuery = '';
@@ -689,7 +1006,7 @@
         function renderFilters(data) {
             const comments = ['All', ...new Set(data.map(s => s.comment).filter(c => c))];
             const container = document.getElementById('filters');
-            container.innerHTML = comments.map(comment => {
+            container.innerHTML = `<span class="filter-prompt">分类筛选：</span>` + comments.map(comment => {
                 const colors = getColorForComment(comment);
                 let style = '';
                 if (colors) {
@@ -740,10 +1057,11 @@
             container.innerHTML = displayData.map((s, index) => {
                 // 生成一个基于域名的唯一 ID，用于状态更新
                 const safeId = btoa(s.domain).replace(/=/g, '');
+                const isNotHttps = !s.access_url.startsWith('https');
                 return `
-                <div class="service-card" onclick="toggleDetails(${index})">
+                <div class="service-card" style="${isNotHttps ? 'background-color: rgba(234, 67, 53, 0.05); border-color: rgba(234, 67, 53, 0.2);' : ''}" onclick="toggleDetails(${index})">
                     <div class="favicon-box">
-                        <img src="${s.icon}" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=64'" alt="" class="favicon">
+                        <img src="${s.icon}" onerror="this.style.display='none'" alt="" class="favicon">
                     </div>
                     <div class="service-info">
                         <h2 title="${s.domain}">${s.domain}</h2>
@@ -759,7 +1077,9 @@
                     })() : ''}
                         </div>
                     </div>
-                    <a href="${s.access_url}" target="_blank" class="external-link" onclick="event.stopPropagation()">
+                    <a href="${s.access_url}" target="_blank" class="external-link" 
+                       style="${!s.access_url.startsWith('https') ? 'color: var(--google-red); border-color: var(--google-red)40;' : ''}"
+                       onclick="event.stopPropagation()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                             <polyline points="15 3 21 3 21 9"></polyline>
@@ -788,21 +1108,172 @@
         function switchView(mode) {
             const gridBtn = document.getElementById('grid-view-btn');
             const topoBtn = document.getElementById('topo-view-btn');
+            const frpBtn = document.getElementById('frp-view-btn');
+            const luckyBtn = document.getElementById('lucky-view-btn');
             const gridView = document.getElementById('grid-view');
             const topoView = document.getElementById('topology-view');
+            const frpView = document.getElementById('frp-view');
+            const luckyView = document.getElementById('lucky-view');
+            const filters = document.getElementById('filters');
+            const checkStatusBtn = document.getElementById('check-status');
 
+            // Hide all
+            [gridBtn, topoBtn, frpBtn, luckyBtn].forEach(b => b.classList.remove('active'));
+            [gridView, topoView, frpView, luckyView].forEach(v => v.style.display = 'none');
+
+            // Category chips only show in Grid view
             if (mode === 'grid') {
+                filters.style.display = 'flex';
+                checkStatusBtn.style.display = 'inline-flex';
                 gridBtn.classList.add('active');
-                topoBtn.classList.remove('active');
                 gridView.style.display = 'block';
-                topoView.style.display = 'none';
             } else {
-                gridBtn.classList.remove('active');
-                topoBtn.classList.add('active');
-                gridView.style.display = 'none';
-                topoView.style.display = 'block';
-                renderTopology();
+                filters.style.display = 'none';
+                // Only grid needs status check, but maybe lucky view could use it too? 
+                // Let's hide it for consistency with user's "raw" request.
+                checkStatusBtn.style.display = 'none';
+
+                if (mode === 'topo') {
+                    topoBtn.classList.add('active');
+                    topoView.style.display = 'block';
+                    renderTopology();
+                } else if (mode === 'frp') {
+                    frpBtn.classList.add('active');
+                    frpView.style.display = 'block';
+                    renderFrpView();
+                } else if (mode === 'lucky') {
+                    luckyBtn.classList.add('active');
+                    luckyView.style.display = 'block';
+                    renderLuckyView();
+                }
             }
+        }
+
+        function renderLuckyView() {
+            const container = document.getElementById('lucky-container');
+            if (!container) return;
+
+            if (!services || services.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--text-dim);">No Lucky services found.</td></tr>';
+                return;
+            }
+
+            let displayData = showAll ? services : services.filter(s => !s.undisplay);
+
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                displayData = displayData.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q) ||
+                    s.server_name.toLowerCase().includes(q) ||
+                    (s.comment && s.comment.toLowerCase().includes(q))
+                );
+            }
+
+            // Group by server_name
+            const instanceList = [...new Set(displayData.map(s => s.server_name))].sort();
+            let currentInstance = null;
+            let htmlChunks = [];
+
+            const sortedData = [...displayData].sort((a, b) => (a.server_name || '').localeCompare(b.server_name || ''));
+
+            sortedData.forEach(s => {
+                const colors = commentPalette[instanceList.indexOf(s.server_name) % commentPalette.length];
+
+                if (s.server_name !== currentInstance) {
+                    htmlChunks.push(`
+                        <tr class="frp-server-header">
+                            <td colspan="4" style="padding: 0.5rem;">
+                                <span class="frp-server-badge" style="background: ${colors.solid}; color: #fff;">
+                                    Instance: ${s.server_name || '未知'}
+                                </span>
+                            </td>
+                        </tr>
+                    `);
+                    currentInstance = s.server_name;
+                }
+
+                const bgStyle = `background-color: ${colors.bg}40;`;
+                const palette = getColorForComment(s.comment);
+                const commentStyle = palette ? `background-color: ${palette.bg}; color: ${palette.text}; border: 1px solid ${palette.border}30;` : '';
+
+                htmlChunks.push(`
+                    <tr style="${bgStyle}">
+                        <td data-label="前端域名"><span class="frp-addr">${s.domain}</span></td>
+                        <td data-label="" style="text-align:center"><span class="frp-arrow">➔</span></td>
+                        <td data-label="后端终端地址"><span class="frp-addr">${s.internal_addr}</span></td>
+                        <td data-label="备注">
+                            ${s.comment ? `<span class="frp-source" style="${commentStyle}">${s.comment}</span>` : '-'}
+                        </td>
+                    </tr>
+                `);
+            });
+
+            container.innerHTML = htmlChunks.join('');
+        }
+
+        function renderFrpView() {
+            const container = document.getElementById('frp-container');
+            if (!container) return;
+
+            if (!frp_mappings || frp_mappings.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-dim);">No FRP mappings found.</td></tr>';
+                return;
+            }
+
+            let data = [...frp_mappings]; // Clone to avoid mutating original
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                data = data.filter(m =>
+                    m.name.toLowerCase().includes(q) ||
+                    m.local_ip.toLowerCase().includes(q) ||
+                    m.local_port.toString().includes(q) ||
+                    m.server_addr.toLowerCase().includes(q) ||
+                    m.remote_port.toString().includes(q)
+                );
+            }
+
+            // Sort by server_addr
+            data.sort((a, b) => a.server_addr.localeCompare(b.server_addr));
+
+            const serverList = [...new Set(data.map(m => m.server_addr))];
+            let currentServer = null;
+            let htmlChunks = [];
+
+            data.forEach(m => {
+                const serverIndex = serverList.indexOf(m.server_addr);
+                const colors = commentPalette[serverIndex % commentPalette.length];
+
+                // Add a divider row if server changes
+                if (m.server_addr !== currentServer) {
+                    const alias = ipAliases[m.server_addr];
+                    const serverLabel = alias ? `${alias} (${m.server_addr})` : m.server_addr;
+                    htmlChunks.push(`
+                        <tr class="frp-server-header">
+                            <td colspan="5" style="padding: 0.5rem;">
+                                <span class="frp-server-badge" style="background: ${colors.solid}; color: #fff;">
+                                    Server: ${serverLabel}
+                                </span>
+                            </td>
+                        </tr>
+                    `);
+                    currentServer = m.server_addr;
+                }
+
+                const bgStyle = `background-color: ${colors.bg}60;`; // 60 is ~37% opacity
+
+                htmlChunks.push(`
+                    <tr style="${bgStyle}">
+                        <td data-label="条目名称"><span class="frp-name">${m.name}</span></td>
+                        <td data-label="内网地址 (Local)"><span class="frp-addr">${m.local_ip}:${m.local_port}</span></td>
+                        <td data-label="" style="text-align:center"><span class="frp-arrow">➔</span></td>
+                        <td data-label="穿透地址 (Remote/FRPS)"><span class="frp-addr">${m.server_addr}:${m.remote_port}</span></td>
+                        <td data-label="配置文件"><span class="frp-source">${m.source_file}</span></td>
+                    </tr>
+                `);
+            });
+
+            container.innerHTML = htmlChunks.join('');
         }
 
         function renderTopology() {
@@ -823,7 +1294,6 @@
             const ipGroups = {};
             data.forEach(s => {
                 let addr = s.internal_addr || 'unknown';
-                // 判断是否是正常的 URL 或 IP 地址
                 let cleanAddr = addr.replace(/^https?:\/\//i, '');
                 let looksLikeIp = /^(?:\d{1,3}\.){3}\d{1,3}/.test(cleanAddr);
                 let looksLikeLocal = cleanAddr.startsWith('localhost') || cleanAddr.startsWith('127.0.0.1');
@@ -831,10 +1301,8 @@
 
                 let ip;
                 if (hasProtocol || looksLikeIp || looksLikeLocal) {
-                    // 提取 IP (处理 IPv4 端口，暂不处理复杂的 IPv6 方括号)
                     ip = cleanAddr.includes(':') ? cleanAddr.split(':')[0] : cleanAddr;
                 } else {
-                    // 文字类（不含网址/IP）统一归类到 TEXT
                     ip = "TEXT";
                 }
 
@@ -843,122 +1311,157 @@
                 ipGroups[ip][addr].push(s);
             });
 
-            let html = '<svg class="topo-svg" id="topo-svg"></svg>';
+            // Make data globally available for toggle
+            window.currentTopoData = Object.entries(ipGroups).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }));
 
-            // Sort by IP
-            const sortedIpEntries = Object.entries(ipGroups).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }));
+            let html = `
+                <div id="topo-roots"></div>
+                <div id="topo-stage">
+                    <svg class="topo-svg" id="topo-svg"></svg>
+                    <div id="topo-detail-content"></div>
+                </div>
+            `;
+            container.innerHTML = html;
 
-            sortedIpEntries.forEach(([ip, addrGroups], ipIndex) => {
-                html += `
-                    <div class="ip-group collapsed" id="ip-group-${ipIndex}">
-                        <div class="ip-header" onclick="toggleIpGroup(${ipIndex})">
-                            <div class="ip-node" id="ip-node-${ipIndex}" style="${ip === 'TEXT' ? 'background: var(--google-yellow)' : ''}">
-                                <span>${ip === 'TEXT' ? '文字描述类 (TEXT)' : (ipAliases[ip] || ip)}</span>
-                                ${(ip !== 'TEXT' && ipAliases[ip]) ? `<span style="opacity:0.7; font-size:0.8rem; font-weight:normal; margin-left:6px">(${ip})</span>` : ''}
-                            </div>
+            const rootsContainer = document.getElementById('topo-roots');
+            rootsContainer.innerHTML = window.currentTopoData.map(([ip, addrGroups], idx) => `
+                <div class="ip-group" id="root-node-${idx}" onclick="toggleIpStage(${idx})">
+                    <div class="ip-header">
+                        <div class="ip-node" style="${ip === 'TEXT' ? 'background: var(--google-yellow)' : ''}">
+                            <span>${ip === 'TEXT' ? '文字描述类 (TEXT)' : (ipAliases[ip] || ip)}</span>
+                            ${(ip !== 'TEXT' && ipAliases[ip]) ? `<span style="opacity:0.7; font-size:0.8rem; font-weight:normal; margin-left:6px">(${ip})</span>` : ''}
                         </div>
-                        <div class="ip-content">
-                            ${Object.entries(addrGroups).map(([addr, items], gIndex) => `
-                                <div class="topo-group" id="topo-group-${ipIndex}-${gIndex}">
-                                    <div class="end-node" id="end-node-${ipIndex}-${gIndex}">
-                                        <strong>终端节点</strong>
-                                        <span>${addr}</span>
-                                    </div>
-                                    <div class="service-nodes">
-                                        ${items.map((item, i) => `
-                                            <div class="service-mini-card" id="service-node-${ipIndex}-${gIndex}-${i}">
-                                                <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=64'">
-                                                <div class="service-info">
-                                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                                        <h2 style="font-size:0.9rem; margin:0">${item.domain}</h2>
-                                                        ${item.comment ? (() => {
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleIpStage(index) {
+            const detailContainer = document.getElementById('topo-detail-content');
+            const roots = document.querySelectorAll('.ip-group');
+            const targetRoot = document.getElementById(`root-node-${index}`);
+
+            // If clicking the already active one, collapse it
+            if (targetRoot.classList.contains('active')) {
+                targetRoot.classList.remove('active');
+                detailContainer.innerHTML = '';
+                document.getElementById('topo-svg').innerHTML = '';
+                return;
+            }
+
+            // Collapse others
+            roots.forEach(r => r.classList.remove('active'));
+            targetRoot.classList.add('active');
+
+            const [ip, addrGroups] = window.currentTopoData[index];
+
+            detailContainer.innerHTML = `
+                <div class="ip-content" id="active-ip-content">
+                    ${Object.entries(addrGroups).map(([addr, items], gIndex) => `
+                        <div class="topo-group" id="active-topo-group-${gIndex}">
+                            <div class="end-node" id="active-end-node-${gIndex}">
+                                <strong>终端节点</strong>
+                                <span>${addr}</span>
+                            </div>
+                            <div class="service-nodes">
+                                ${items.map((item, i) => {
+                const safeChain = (item.chain || '').replace(/"/g, '&quot;');
+                return `
+                                    <a href="${item.access_url}" target="_blank" class="service-mini-card" 
+                                       data-status="${item.status || 'unknown'}"
+                                       id="active-service-node-${gIndex}-${i}" title="解析路径: ${safeChain}">
+                                        <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.style.display='none'">
+                                        <div class="service-info">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <h2 style="font-size:0.9rem; margin:0; color: var(--text-main);">${item.domain}</h2>
+                                                ${item.comment ? (() => {
                         const colors = getColorForComment(item.comment);
                         const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}20; padding: 1px 6px; font-size: 0.65rem;` : '';
                         return `<span class="comment-tag" style="${style}">${item.comment}</span>`;
                     })() : ''}
-                                                    </div>
-                                                    <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
-                                                </div>
                                             </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            `).join('')}
+                                            <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
+                                        </div>
+                                    </a>
+                                `}).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `).join('')}
+                </div>
+            `;
 
-            container.innerHTML = html;
-            setTimeout(drawTopologyPaths, 100);
+            // Draw paths only if not on mobile (mobile uses vertical layout without paths)
+            if (window.innerWidth > 768) {
+                setTimeout(() => drawStagePaths(), 50);
+            } else {
+                document.getElementById('topo-svg').innerHTML = '';
+            }
         }
 
-        function toggleIpGroup(index) {
-            const group = document.getElementById(`ip-group-${index}`);
-            group.classList.toggle('collapsed');
-            drawTopologyPaths(); // Re-draw paths after layout change
-        }
-
-        function drawTopologyPaths() {
-            const container = document.getElementById('topo-content');
+        function drawStagePaths() {
+            const container = document.getElementById('topo-stage');
             const svg = document.getElementById('topo-svg');
             if (!svg || !container) return;
 
             const containerRect = container.getBoundingClientRect();
             let svgPaths = '';
 
-            // Find all visible IP groups
-            const ipGroups = document.querySelectorAll('.ip-group:not(.collapsed)');
+            const endNodes = document.querySelectorAll('.end-node');
+            endNodes.forEach(endNode => {
+                const endNodeIdParts = endNode.id.split('-');
+                const gIndex = endNodeIdParts[endNodeIdParts.length - 1];
+                const endRect = endNode.getBoundingClientRect();
 
-            ipGroups.forEach(group => {
-                const ipIndex = group.id.split('-')[2];
-                const ipNode = document.getElementById(`ip-node-${ipIndex}`);
-                const ipRect = ipNode.getBoundingClientRect();
+                // End Node -> Service Nodes
+                const services = document.querySelectorAll(`[id^="active-service-node-${gIndex}-"]`);
+                services.forEach(serviceNode => {
+                    const serviceRect = serviceNode.getBoundingClientRect();
+                    const status = serviceNode.getAttribute('data-status');
 
-                // Path from IP node to each End node within this group
-                const endNodes = group.querySelectorAll('.end-node');
-                endNodes.forEach(endNode => {
-                    const gIndex = endNode.id.split('-')[3];
-                    const endRect = endNode.getBoundingClientRect();
+                    let pulseColor = 'var(--google-blue)';
+                    if (status === 'online') pulseColor = 'var(--google-green)';
+                    else if (status === 'offline') pulseColor = 'var(--google-red)';
 
-                    // IP -> End Node
-                    const startX1 = ipRect.right - containerRect.left;
-                    const startY1 = ipRect.top + ipRect.height / 2 - containerRect.top;
-                    const endX1 = endRect.left - containerRect.left;
-                    const endY1 = endRect.top + endRect.height / 2 - containerRect.top;
+                    const startX = endRect.right - containerRect.left;
+                    const startY = endRect.top + endRect.height / 2 - containerRect.top;
+                    const endX = serviceRect.left - containerRect.left;
+                    const endY = serviceRect.top + serviceRect.height / 2 - containerRect.top;
 
-                    const d1 = `M ${startX1} ${startY1} C ${startX1 + 40} ${startY1}, ${endX1 - 40} ${endY1}, ${endX1} ${endY1}`;
-                    svgPaths += `<path class="connection-line" d="${d1}" style="stroke: var(--google-green); opacity: 0.3" />`;
+                    const d = `M ${startX} ${startY} C ${startX + 40} ${startY}, ${endX - 40} ${endY}, ${endX} ${endY}`;
+                    svgPaths += `<path class="connection-line" d="${d}" />`;
 
-                    // End Node -> Service Nodes
-                    const services = document.querySelectorAll(`[id^="service-node-${ipIndex}-${gIndex}-"]`);
-                    services.forEach(serviceNode => {
-                        const serviceRect = serviceNode.getBoundingClientRect();
-
-                        const startX2 = endRect.right - containerRect.left;
-                        const startY2 = endRect.top + endRect.height / 2 - containerRect.top;
-                        const endX2 = serviceRect.left - containerRect.left;
-                        const endY2 = serviceRect.top + serviceRect.height / 2 - containerRect.top;
-
-                        const d2 = `M ${startX2} ${startY2} C ${startX2 + 40} ${startY2}, ${endX2 - 40} ${endY2}, ${endX2} ${endY2}`;
+                    if (status === 'offline') {
+                        // Place X on the right side node (service node)
+                        const xOffset = -8;
                         svgPaths += `
-                            <path class="connection-line" d="${d2}" />
-                            <circle r="2.5" class="pulse-circle">
-                                <animateMotion dur="${2 + Math.random() * 2}s" repeatCount="indefinite" path="${d2}" />
+                            <g transform="translate(${endX + xOffset}, ${endY})">
+                                <line x1="-5" y1="-5" x2="5" y2="5" stroke="var(--google-red)" stroke-width="3" stroke-linecap="round" />
+                                <line x1="-5" y1="5" x2="5" y2="-5" stroke="var(--google-red)" stroke-width="3" stroke-linecap="round" />
+                            </g>
+                        `;
+                    } else {
+                        // Online or Unknown states (Green/Blue circles)
+                        svgPaths += `
+                            <circle r="3" class="pulse-circle" style="fill: ${pulseColor};">
+                                <animateMotion dur="${2 + Math.random() * 2}s" repeatCount="indefinite" path="${d}" />
                             </circle>
                         `;
-                    });
+                    }
                 });
             });
 
             svg.innerHTML = svgPaths;
+            svg.style.display = 'block'; // Ensure it's visible
         }
 
+        function drawTopologyPaths() { }
+
+
         async function checkAllStatus() {
-            const btn = document.getElementById('check-status-grid');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>Checking...</span>';
-            btn.disabled = true;
+            const btnText = document.getElementById('status-btn-text');
+            const originalText = btnText.textContent;
+            btnText.textContent = '正在检查...';
+            document.getElementById('check-status').disabled = true;
 
             // 只检查当前可见的服务
             let visibleData = showAll ? services : services.filter(s => !s.undisplay);
@@ -969,61 +1472,78 @@
             const tasks = visibleData.map(async (s) => {
                 const safeId = btoa(s.domain).replace(/=/g, '');
                 const el = document.getElementById(`status-${safeId}`);
-                if (!el) return;
 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8秒超时
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
 
                 try {
-                    // 尝试正常 fetch (可能触发 CORS)
+                    // 第一步：正常探测，尝试获取 HTTP 状态码
                     let response = await fetch(s.access_url, {
                         method: 'GET',
                         signal: controller.signal
                     });
 
                     clearTimeout(timeoutId);
-                    if (response.ok || response.status === 0) {
+                    s.status = 'online';
+                    if (el) {
                         el.className = 'status-indicator status-online';
-                        el.querySelector('span').textContent = response.status === 0 ? 'Online' : response.status;
-                    } else {
-                        el.className = 'status-indicator status-offline';
-                        el.querySelector('span').textContent = response.status;
+                        let statusText = response.status === 0 ? 'Online' : response.status;
+                        if (response.status === 401) statusText = 'Auth Mode';
+                        el.querySelector('span').textContent = statusText;
                     }
                 } catch (err) {
                     clearTimeout(timeoutId);
 
-                    // 如果是 CORS 错误，尝试 no-cors 探测存活
                     if (err.name !== 'AbortError') {
+                        // 第二步：备选方案。如果因 CORS 或认证被浏览器拦截，使用 no-cors 探测存活
                         try {
-                            const controller2 = new AbortController();
-                            const timeoutId2 = setTimeout(() => controller2.abort(), 5000);
+                            const c2 = new AbortController();
+                            const t2 = setTimeout(() => c2.abort(), 5000); // 5秒超时
 
                             await fetch(s.access_url, {
                                 method: 'GET',
                                 mode: 'no-cors',
-                                signal: controller2.signal
+                                signal: c2.signal
                             });
 
-                            clearTimeout(timeoutId2);
-                            el.className = 'status-indicator status-online';
-                            el.querySelector('span').textContent = 'Online';
-                            return;
+                            clearTimeout(t2);
+                            s.status = 'online';
+                            if (el) {
+                                el.className = 'status-indicator status-online';
+                                el.querySelector('span').textContent = 'Online';
+                            }
                         } catch (err2) {
-                            clearTimeout(timeoutId2);
+                            clearTimeout(t2);
+                            s.status = 'offline';
+                            if (el) {
+                                el.className = 'status-indicator status-offline';
+                                el.querySelector('span').textContent = err2.name === 'AbortError' ? 'Timeout' : 'Fail';
+                            }
+                        }
+                    } else {
+                        // 初始请求就超时了
+                        s.status = 'offline';
+                        if (el) {
+                            el.className = 'status-indicator status-offline';
+                            el.querySelector('span').textContent = 'Timeout';
                         }
                     }
+                }
 
-                    el.className = 'status-indicator status-offline';
-                    let errorMsg = 'Error';
-                    if (err.name === 'AbortError') errorMsg = 'Timeout';
-                    else if (err.message.includes('Failed to fetch')) errorMsg = 'Fail';
-                    el.querySelector('span').textContent = errorMsg;
+                // 同步更新拓扑视图中的状态（如果存在）
+                if (document.getElementById('topology-view').style.display === 'block') {
+                    document.querySelectorAll(`a[href="${s.access_url}"]`).forEach(node => {
+                        node.setAttribute('data-status', s.status);
+                    });
+                    if (window.innerWidth > 768) {
+                        drawStagePaths(); // 每次状态更新后重绘路径
+                    }
                 }
             });
 
             await Promise.all(tasks);
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            btnText.textContent = originalText;
+            document.getElementById('check-status').disabled = false;
         }
 
         function filterByComment(comment) {
@@ -1040,9 +1560,13 @@
 
         function toggleUndisplay() {
             showAll = !showAll;
-            const btnTextG = document.getElementById('btn-text-grid');
-            if (btnTextG) btnTextG.textContent = showAll ? "Hide Special Services" : "Show All Services";
+            const btnText = document.getElementById('btn-text');
+            if (btnText) btnText.textContent = showAll ? "隐藏特殊服务" : "显示隐藏的服务";
+
+            // Re-render based on what's likely active
             renderServices(services);
+            renderTopology();
+            renderLuckyView();
         }
 
         // Initialize

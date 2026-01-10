@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import sys
 from lucky_data import get_lucky_services
 from scanner_frp import get_frp_configs, parse_frp_config
@@ -19,6 +20,10 @@ async def main():
         return
 
     print("=== 开始生成导航页面 ===")
+    output_dir = 'myserv'
+    os.makedirs(output_dir, exist_ok=True)
+    favicons_dir = os.path.join(output_dir, 'favicons')
+    os.makedirs(favicons_dir, exist_ok=True)
     
     # 1. 扫描 FRP 配置
     systemd_dir = config.get("systemd_dir", "/lib/systemd/system")
@@ -35,16 +40,39 @@ async def main():
     static_mappings = config.get("static_mappings", [])
     lucky_services = []
     
-    import re
+    cache_file = 'lucky_cache.json'
+    use_cache = "skiplucky" in sys.argv
 
-    for ls_config in lucky_servers:
-        server_name = ls_config.get("name", "未命名Lucky")
-        print(f"[*] 正在从 Lucky ({server_name} - {ls_config['url']}) 获取服务信息...")
-        services = await get_lucky_services(ls_config['url'], ls_config['user'], ls_config['pass'], server_name)
-        # 给每个service打上服务器标记
-        for s in services:
-            s['server_name'] = server_name
-        lucky_services.extend(services)
+    if use_cache and os.path.exists(cache_file):
+        print(f"[*] 检测到 skiplucky 参数，正在从缓存 {cache_file} 读取 Lucky 数据...")
+        try:
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                lucky_services = json.load(f)
+            print(f"[+] 从缓存加载了 {len(lucky_services)} 个服务")
+        except Exception as e:
+            print(f"[!] 读取缓存失败: {e}，将重新获取")
+            use_cache = False
+
+    if not use_cache or not lucky_services:
+        for ls_config in lucky_servers:
+            server_name = ls_config.get("name", "未命名Lucky")
+            print(f"[*] 正在从 Lucky ({server_name} - {ls_config['url']}) 获取服务信息...")
+            try:
+                services = await get_lucky_services(ls_config['url'], ls_config['user'], ls_config['pass'], server_name)
+                # 给每个service打上服务器标记
+                for s in services:
+                    s['server_name'] = server_name
+                lucky_services.extend(services)
+            except Exception as e:
+                print(f"[!] 从 {server_name} 获取数据失败: {e}")
+        
+        # 保存到缓存
+        try:
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(lucky_services, f, ensure_ascii=False, indent=2)
+            print(f"[+] Lucky 数据已缓存至 {cache_file}")
+        except Exception as e:
+            print(f"[!] 保存缓存失败: {e}")
     
     print(f"[+] 总计找到 {len(lucky_services)} 个 Lucky 服务")
     
@@ -349,8 +377,8 @@ async def main():
         # 确保每个条目的 icon 路径仍然指向现有的本地文件（如果存在）
         for s in final_data:
             domain = s['domain']
-            real_path = os.path.join('favicons', f"{domain}.png")
-            pillow_path = os.path.join('favicons', f"{domain}.pillow.png")
+            real_path = os.path.join(favicons_dir, f"{domain}.png")
+            pillow_path = os.path.join(favicons_dir, f"{domain}.pillow.png")
             if os.path.exists(real_path):
                 s['icon'] = f"favicons/{domain}.png"
             elif os.path.exists(pillow_path):
@@ -364,15 +392,14 @@ async def main():
         # 禁用 HTTPS 证书验证警告
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
-        os.makedirs('favicons', exist_ok=True)
         print("\n[*] 正在处理图标下载与缓存...")
     
         for s in final_data:
             domain = s['domain']
             access_url = s['access_url']
             
-            real_icon_path = os.path.join('favicons', f"{domain}.png")
-            pillow_icon_path = os.path.join('favicons', f"{domain}.pillow.png")
+            real_icon_path = os.path.join(favicons_dir, f"{domain}.png")
+            pillow_icon_path = os.path.join(favicons_dir, f"{domain}.pillow.png")
             
             # 初始检查：如果已经有真实图标，直接使用
             if os.path.exists(real_icon_path):
@@ -416,7 +443,6 @@ async def main():
                     print(f"    - 正在分析首页 HTML 源码: {access_url}")
                     r_html = requests.get(access_url, timeout=5, verify=False)
                     if r_html.status_code == 200:
-                        import re
                         pattern = r'<link[^>]+rel=["\'](?:shortcut )?icon["\'][^>]+href=["\']([^"\']+)["\']'
                         match = re.search(pattern, r_html.text, re.IGNORECASE)
                         if not match:
@@ -494,12 +520,14 @@ async def main():
     # 同时保存 JSON 供调试，并生成内嵌数据的 HTML 提高便携性
     output_payload = {
         "ip_aliases": config.get("ip_aliases", {}),
-        "services": final_data
+        "services": final_data,
+        "frp_mappings": all_frp_mappings
     }
     
-    with open('services.json', 'w', encoding='utf-8') as f:
+    services_path = os.path.join(output_dir, 'services.json')
+    with open(services_path, 'w', encoding='utf-8') as f:
         json.dump(output_payload, f, ensure_ascii=False, indent=2)
-    print("[+] 数据已保存至 services.json")
+    print(f"[+] 数据已保存至 {services_path}")
 
     # 5. 生成 HTML
     if os.path.exists('template.html'):
@@ -510,10 +538,13 @@ async def main():
         html_content = tmpl.replace('var services = [];', f'var services = {json.dumps(output_payload["services"], ensure_ascii=False)};')
         # 增加 ip_aliases 填充
         html_content = html_content.replace('var ipAliases = {};', f'var ipAliases = {json.dumps(output_payload["ip_aliases"], ensure_ascii=False)};')
+        # 增加 frp_mappings 填充
+        html_content = html_content.replace('var frp_mappings = [];', f'var frp_mappings = {json.dumps(output_payload["frp_mappings"], ensure_ascii=False)};')
 
-        with open('index.html', 'w', encoding='utf-8') as f:
+        index_path = os.path.join(output_dir, 'index.html')
+        with open(index_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
-        print("[+] 导航页面 (数据内嵌版) 已生成: index.html")
+        print(f"[+] 导航页面 (数据内嵌版) 已生成: {index_path}")
 
 if __name__ == "__main__":
     asyncio.run(main())
