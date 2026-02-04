@@ -8,6 +8,15 @@ from scanner_frp import get_frp_configs, parse_frp_config
 from utils import resolve_domain, get_favicon_url, get_mapping_type
 
 async def main():
+    # 加载终端节点别名
+    terminal_names = {}
+    if os.path.exists('terminal_names.json'):
+        try:
+            with open('terminal_names.json', 'r', encoding='utf-8') as f:
+                terminal_names = json.load(f)
+        except Exception as e:
+            print(f"[!] 读取 terminal_names.json 失败: {e}")
+
     if not os.path.exists('config.json'):
         print("[!] 找不到 config.json 文件，请确保该文件存在。")
         return
@@ -521,7 +530,8 @@ async def main():
     output_payload = {
         "ip_aliases": config.get("ip_aliases", {}),
         "services": final_data,
-        "frp_mappings": all_frp_mappings
+        "frp_mappings": all_frp_mappings,
+        "terminal_names": terminal_names
     }
     
     services_path = os.path.join(output_dir, 'services.json')
@@ -540,6 +550,8 @@ async def main():
         html_content = html_content.replace('var ipAliases = {};', f'var ipAliases = {json.dumps(output_payload["ip_aliases"], ensure_ascii=False)};')
         # 增加 frp_mappings 填充
         html_content = html_content.replace('var frp_mappings = [];', f'var frp_mappings = {json.dumps(output_payload["frp_mappings"], ensure_ascii=False)};')
+        # 增加 terminal_names 填充
+        html_content = html_content.replace('var terminalNames = {};', f'var terminalNames = {json.dumps(output_payload["terminal_names"], ensure_ascii=False)};')
 
         index_path = os.path.join(output_dir, 'index.html')
         with open(index_path, 'w', encoding='utf-8') as f:

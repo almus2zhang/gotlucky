@@ -311,7 +311,212 @@
             box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
         }
 
-        /* Topology View Styles */
+        /* Navigation View Styles (Formerly Compact Topology) */
+        #navigation-view {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .topo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .terminal-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .terminal-card:hover {
+            box-shadow: 0 4px 12px rgba(60, 64, 67, 0.15);
+            border-color: var(--google-blue);
+            transform: translateY(-2px);
+            z-index: 10;
+        }
+
+        .terminal-card.active-popover {
+            z-index: 100;
+            border-color: var(--google-blue);
+        }
+
+        .terminal-logo {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: #fff;
+            border: 1px solid #f1f3f4;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .terminal-info {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .terminal-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .edit-name-btn {
+            opacity: 0;
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: var(--transition);
+        }
+
+        .terminal-card:hover .edit-name-btn {
+            opacity: 1;
+        }
+
+        .edit-name-btn:hover {
+            color: var(--google-blue);
+        }
+
+        .terminal-addr {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-family: 'Roboto Mono', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .terminal-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            z-index: 5;
+        }
+
+        .dot-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 6px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dot-btn:hover {
+            background: #f1f3f4;
+            color: var(--google-blue);
+        }
+
+        .entry-popover {
+            display: none;
+            position: absolute;
+            top: 2.5rem;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            width: 320px;
+            padding: 0.5rem 0;
+            animation: fadeIn 0.15s ease-out;
+        }
+
+        .topo-filter-bar {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            border-bottom: 1px solid #f1f3f4;
+            padding-bottom: 1.5rem;
+        }
+
+        .entry-popover.active {
+            display: block;
+        }
+
+        .entry-popover h3 {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            border-bottom: 1px solid #f1f3f4;
+            margin-bottom: 4px;
+        }
+
+        .entry-item {
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: background 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .entry-item span {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .entry-item:hover {
+            background: #f8f9fa;
+            color: var(--google-blue);
+        }
+
+        .entry-item img {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Old Topology View Styles */
         #topology-view {
             display: none;
             max-width: 1600px;
@@ -416,8 +621,6 @@
             transition: transform 0.3s;
             color: var(--text-dim);
         }
-
-
 
         .ip-content {
             display: flex;
@@ -857,7 +1060,15 @@
                 <rect x="14" y="14" width="7" height="7"></rect>
                 <rect x="3" y="14" width="7" height="7"></rect>
             </svg>
-            网格视图
+            入口视图
+        </button>
+        <button class="switch-btn" id="nav-view-btn" onclick="switchView('nav')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            导航视图
         </button>
         <button class="switch-btn" id="topo-view-btn" onclick="switchView('topo')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -868,7 +1079,7 @@
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
-            拓扑连接
+            拓扑视图
         </button>
         <button class="switch-btn" id="frp-view-btn" onclick="switchView('frp')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -917,6 +1128,11 @@
         <main class="container" id="services-container">
             <!-- Services injection -->
         </main>
+    </div>
+
+    <div id="navigation-view">
+        <div class="topo-filter-bar" id="topo-ip-filters"></div>
+        <div class="topo-grid" id="topo-grid"></div>
     </div>
 
     <div id="topology-view">
@@ -991,6 +1207,7 @@
         function handleSearch() {
             searchQuery = document.getElementById('global-search').value;
             renderServices(services);
+            renderNavigationView();
             renderTopology();
             renderFrpView();
             renderLuckyView();
@@ -999,6 +1216,8 @@
         var services = [];
         var ipAliases = {};
         var frp_mappings = [];
+        var terminalNames = {};
+        var activeTopoIp = 'All';
         var showAll = false;
         var activeFilter = 'All';
         var searchQuery = '';
@@ -1061,7 +1280,7 @@
                 return `
                 <div class="service-card" style="${isNotHttps ? 'background-color: rgba(234, 67, 53, 0.05); border-color: rgba(234, 67, 53, 0.2);' : ''}" onclick="toggleDetails(${index})">
                     <div class="favicon-box">
-                        <img src="${s.icon}" onerror="this.style.display='none'" alt="" class="favicon">
+                        <img src="${s.icon}" onerror="this.onerror=null; this.style.display='none'" alt="" class="favicon">
                     </div>
                     <div class="service-info">
                         <h2 title="${s.domain}">${s.domain}</h2>
@@ -1107,19 +1326,23 @@
 
         function switchView(mode) {
             const gridBtn = document.getElementById('grid-view-btn');
+            const navBtn = document.getElementById('nav-view-btn');
             const topoBtn = document.getElementById('topo-view-btn');
             const frpBtn = document.getElementById('frp-view-btn');
             const luckyBtn = document.getElementById('lucky-view-btn');
+
             const gridView = document.getElementById('grid-view');
+            const navView = document.getElementById('navigation-view');
             const topoView = document.getElementById('topology-view');
             const frpView = document.getElementById('frp-view');
             const luckyView = document.getElementById('lucky-view');
+
             const filters = document.getElementById('filters');
             const checkStatusBtn = document.getElementById('check-status');
 
             // Hide all
-            [gridBtn, topoBtn, frpBtn, luckyBtn].forEach(b => b.classList.remove('active'));
-            [gridView, topoView, frpView, luckyView].forEach(v => v.style.display = 'none');
+            [gridBtn, navBtn, topoBtn, frpBtn, luckyBtn].forEach(b => b.classList.remove('active'));
+            [gridView, navView, topoView, frpView, luckyView].forEach(v => v.style.display = 'none');
 
             // Category chips only show in Grid view
             if (mode === 'grid') {
@@ -1129,11 +1352,13 @@
                 gridView.style.display = 'block';
             } else {
                 filters.style.display = 'none';
-                // Only grid needs status check, but maybe lucky view could use it too? 
-                // Let's hide it for consistency with user's "raw" request.
                 checkStatusBtn.style.display = 'none';
 
-                if (mode === 'topo') {
+                if (mode === 'nav') {
+                    navBtn.classList.add('active');
+                    navView.style.display = 'block';
+                    renderNavigationView();
+                } else if (mode === 'topo') {
                     topoBtn.classList.add('active');
                     topoView.style.display = 'block';
                     renderTopology();
@@ -1276,6 +1501,248 @@
             container.innerHTML = htmlChunks.join('');
         }
 
+        async function checkConnectivity(url) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout for local check
+                await fetch(url, { mode: 'no-cors', signal: controller.signal });
+                clearTimeout(timeoutId);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function handleTerminalClick(internalAddr, entryAddr) {
+            // Check if internalAddr is actually a "local" or private address
+            const isLocal = /^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/.test(internalAddr.replace(/^https?:\/\//, ''));
+
+            if (isLocal) {
+                console.log(`Checking connectivity to internal address: ${internalAddr}`);
+                const reachable = await checkConnectivity(internalAddr);
+                if (reachable) {
+                    window.open(internalAddr, '_blank');
+                } else {
+                    console.log(`Internal address not reachable, opening entry address: ${entryAddr}`);
+                    window.open(entryAddr, '_blank');
+                }
+            } else {
+                window.open(internalAddr, '_blank');
+            }
+        }
+
+        function toggleEntryPopover(event, index) {
+            event.stopPropagation();
+            const popovers = document.querySelectorAll('.entry-popover');
+            const cards = document.querySelectorAll('.terminal-card');
+            const target = document.getElementById(`popover-${index}`);
+            const parentCard = target.closest('.terminal-card');
+            const isActive = target.classList.contains('active');
+
+            popovers.forEach(p => p.classList.remove('active'));
+            cards.forEach(c => c.classList.remove('active-popover'));
+
+            if (!isActive) {
+                target.classList.add('active');
+                if (parentCard) parentCard.classList.add('active-popover');
+            }
+
+            // Close when clicking outside
+            const closeHandler = (e) => {
+                if (!target.contains(e.target)) {
+                    target.classList.remove('active');
+                    if (parentCard) parentCard.classList.remove('active-popover');
+                    document.removeEventListener('click', closeHandler);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeHandler), 10);
+        }
+
+        function editTerminalName(event, addr) {
+            event.stopPropagation();
+            const currentName = terminalNames[addr] || addr;
+            const newName = prompt("请输入终端节点名字:", currentName);
+            if (newName !== null) {
+                terminalNames[addr] = newName;
+                // Sync to localStorage for persistence across reloads
+                const stored = JSON.parse(localStorage.getItem('savedTerminalNames') || '{}');
+                stored[addr] = newName;
+                localStorage.setItem('savedTerminalNames', JSON.stringify(stored));
+                renderNavigationView();
+            }
+        }
+
+        function filterNavByIp(ip) {
+            activeTopoIp = ip;
+            const filters = document.getElementById('topo-ip-filters');
+            if (filters) {
+                filters.querySelectorAll('.filter-chip').forEach(chip => {
+                    chip.classList.toggle('active', chip.dataset.ip === ip);
+                });
+            }
+            renderNavTerminalCards();
+        }
+
+        function renderNavigationView() {
+            renderNavIpFilters();
+            renderNavTerminalCards();
+        }
+
+        function renderNavIpFilters() {
+            const container = document.getElementById('topo-ip-filters');
+            if (!container) return;
+
+            let data = services.filter(s => showAll || !s.undisplay);
+
+            const presentIps = new Set();
+            let hasText = false;
+            data.forEach(s => {
+                const addr = s.internal_addr.replace(/^https?:\/\//, '');
+                const ip = addr.split(':')[0];
+                const isIp = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip) || ip === 'localhost';
+                if (isIp) {
+                    presentIps.add(ip);
+                } else {
+                    hasText = true;
+                }
+            });
+
+            // Order of chips: All -> ipAliases keys -> Remaining -> TEXT
+            const chips = [{ id: 'All', label: '全部节点' }];
+
+            // Add defined aliases first
+            const aliasedIps = Object.keys(ipAliases);
+            aliasedIps.forEach(ip => {
+                if (presentIps.has(ip)) {
+                    chips.push({ id: ip, label: ipAliases[ip] });
+                    presentIps.delete(ip);
+                }
+            });
+
+            // Add remaining IPs
+            if (presentIps.size > 0) {
+                chips.push({ id: 'Remaining', label: '其他节点' });
+            }
+
+            // Add TEXT
+            if (hasText) {
+                chips.push({ id: 'TEXT', label: '文字描述 (TEXT)' });
+            }
+
+            container.innerHTML = `<span class="filter-prompt">分组筛选：</span>` + chips.map(chip => {
+                return `
+                    <button class="filter-chip ${activeTopoIp === chip.id ? 'active' : ''}" 
+                            data-ip="${chip.id}"
+                            onclick="filterNavByIp('${chip.id}')">
+                        ${chip.label}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderNavTerminalCards() {
+            const container = document.getElementById('topo-grid');
+            if (!container) return;
+
+            // Load from localStorage as well
+            const stored = JSON.parse(localStorage.getItem('savedTerminalNames') || '{}');
+            Object.assign(terminalNames, stored);
+
+            let data = services.filter(s => showAll || !s.undisplay);
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                data = data.filter(s =>
+                    s.domain.toLowerCase().includes(q) ||
+                    s.internal_addr.toLowerCase().includes(q)
+                );
+            }
+
+            // Filter by selected Group
+            if (activeTopoIp !== 'All') {
+                data = data.filter(s => {
+                    const addr = s.internal_addr.replace(/^https?:\/\//, '');
+                    const ip = addr.split(':')[0];
+                    const isIp = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip) || ip === 'localhost';
+
+                    if (activeTopoIp === 'TEXT') return !isIp;
+                    if (activeTopoIp === 'Remaining') return isIp && !ipAliases[ip];
+                    return ip === activeTopoIp;
+                });
+            }
+
+            // Group by internal_addr
+            const terminalGroups = {};
+            data.forEach(s => {
+                const addr = s.internal_addr;
+                if (!terminalGroups[addr]) terminalGroups[addr] = [];
+                terminalGroups[addr].push(s);
+            });
+
+            const sortedAddrs = Object.keys(terminalGroups).sort((a, b) => {
+                const getScore = (addr) => {
+                    const clean = addr.replace(/^https?:\/\//, '');
+                    const ip = clean.split(':')[0];
+                    const isIp = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip) || ip === 'localhost';
+
+                    if (!isIp) return 10000; // TEXT nodes at the end
+                    const aliasIndex = Object.keys(ipAliases).indexOf(ip);
+                    if (aliasIndex !== -1) return aliasIndex; // Priority to ip_aliases
+                    return 5000; // Remaining IPs
+                };
+
+                const scoreA = getScore(a);
+                const scoreB = getScore(b);
+
+                if (scoreA !== scoreB) return scoreA - scoreB;
+                return a.localeCompare(b, undefined, { numeric: true });
+            });
+
+            container.innerHTML = sortedAddrs.map((addr, idx) => {
+                const items = terminalGroups[addr];
+                const primary = items[0];
+                const name = terminalNames[addr] || addr;
+
+                return `
+                    <div class="terminal-card" onclick="handleTerminalClick('${addr}', '${primary.access_url}')">
+                        <div class="terminal-logo">
+                            <img src="${primary.icon}" class="favicon" onerror="this.onerror=null; this.src='favicons/default.png'">
+                        </div>
+                        <div class="terminal-info">
+                            <div class="terminal-name-row">
+                                <div class="terminal-name">${name}</div>
+                                <div class="edit-name-btn" onclick="editTerminalName(event, '${addr}')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="terminal-addr">${addr}</div>
+                        </div>
+                        <div class="terminal-actions">
+                            <button class="dot-btn" onclick="toggleEntryPopover(event, ${idx})">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="1"></circle>
+                                    <circle cx="12" cy="5" r="1"></circle>
+                                    <circle cx="12" cy="19" r="1"></circle>
+                                </svg>
+                            </button>
+                            <div class="entry-popover" id="popover-${idx}">
+                                <h3>关联入口 (${items.length})</h3>
+                                ${items.map(item => `
+                                    <a href="${item.access_url}" target="_blank" class="entry-item" onclick="event.stopPropagation()" title="访问路径: ${item.chain}">
+                                        <img src="${item.icon}" onerror="this.onerror=null; this.style.display='none'">
+                                        <span style="font-family: 'Roboto Mono', monospace; font-size: 0.75rem;">${item.access_url}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- Old Topology Logic Restored ---
         function renderTopology() {
             const container = document.getElementById('topo-content');
             let data = services.filter(s => showAll || !s.undisplay);
@@ -1370,7 +1837,7 @@
                                     <a href="${item.access_url}" target="_blank" class="service-mini-card" 
                                        data-status="${item.status || 'unknown'}"
                                        id="active-service-node-${gIndex}-${i}" title="解析路径: ${safeChain}">
-                                        <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.style.display='none'">
+                                        <img src="${item.icon}" class="favicon" style="width:24px;height:24px" onerror="this.onerror=null; this.src='favicons/default.png'">
                                         <div class="service-info">
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h2 style="font-size:0.9rem; margin:0; color: var(--text-main);">${item.domain}</h2>
@@ -1454,8 +1921,6 @@
             svg.style.display = 'block'; // Ensure it's visible
         }
 
-        function drawTopologyPaths() { }
-
 
         async function checkAllStatus() {
             const btnText = document.getElementById('status-btn-text');
@@ -1530,14 +1995,20 @@
                     }
                 }
 
-                // 同步更新拓扑视图中的状态（如果存在）
-                if (document.getElementById('topology-view').style.display === 'block') {
-                    document.querySelectorAll(`a[href="${s.access_url}"]`).forEach(node => {
-                        node.setAttribute('data-status', s.status);
+                if (document.getElementById('navigation-view').style.display === 'block') {
+                    document.querySelectorAll(`.entry-item[href="${s.access_url}"]`).forEach(node => {
+                        // 可以添加在线状态指示
+                        node.style.borderLeft = `3px solid ${s.status === 'online' ? 'var(--google-green)' : 'var(--google-red)'}`;
                     });
-                    if (window.innerWidth > 768) {
-                        drawStagePaths(); // 每次状态更新后重绘路径
-                    }
+                }
+                if (document.getElementById('topology-view').style.display === 'block') {
+                    document.querySelectorAll(`[href="${s.access_url}"]`).forEach(node => {
+                        if (node.classList.contains('service-mini-card')) {
+                            node.setAttribute('data-status', s.status);
+                        }
+                    });
+                    // Refresh paths to update colors
+                    if (window.innerWidth > 768) drawStagePaths();
                 }
             });
 
@@ -1563,8 +2034,9 @@
             const btnText = document.getElementById('btn-text');
             if (btnText) btnText.textContent = showAll ? "隐藏特殊服务" : "显示隐藏的服务";
 
-            // Re-render based on what's likely active
+            // Re-render based on what's active
             renderServices(services);
+            renderNavigationView();
             renderTopology();
             renderLuckyView();
         }
@@ -1573,7 +2045,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof services !== 'undefined' && services.length > 0) {
                 renderFilters(services);
-                renderServices(services);
+                // Default to Navigation view
+                switchView('nav');
             }
         });
     </script>

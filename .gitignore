@@ -10,6 +10,7 @@ output.txt
 node_modules/
 .idea/
 anonymize_data.py
+anonymize_myserv.py
 /index2.html
 /index.html
 /myserv/
