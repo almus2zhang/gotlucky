@@ -1350,6 +1350,7 @@
                 checkStatusBtn.style.display = 'inline-flex';
                 gridBtn.classList.add('active');
                 gridView.style.display = 'block';
+                renderServices(services);
             } else {
                 filters.style.display = 'none';
                 checkStatusBtn.style.display = 'none';
@@ -1569,6 +1570,7 @@
                 stored[addr] = newName;
                 localStorage.setItem('savedTerminalNames', JSON.stringify(stored));
                 renderNavigationView();
+                renderTopology();
             }
         }
 
@@ -1824,16 +1826,18 @@
 
             detailContainer.innerHTML = `
                 <div class="ip-content" id="active-ip-content">
-                    ${Object.entries(addrGroups).map(([addr, items], gIndex) => `
+                    ${Object.entries(addrGroups).map(([addr, items], gIndex) => {
+                const displayName = terminalNames[addr] || "终端节点";
+                return `
                         <div class="topo-group" id="active-topo-group-${gIndex}">
                             <div class="end-node" id="active-end-node-${gIndex}">
-                                <strong>终端节点</strong>
+                                <strong>${displayName}</strong>
                                 <span>${addr}</span>
                             </div>
                             <div class="service-nodes">
                                 ${items.map((item, i) => {
-                const safeChain = (item.chain || '').replace(/"/g, '&quot;');
-                return `
+                    const safeChain = (item.chain || '').replace(/"/g, '&quot;');
+                    return `
                                     <a href="${item.access_url}" target="_blank" class="service-mini-card" 
                                        data-status="${item.status || 'unknown'}"
                                        id="active-service-node-${gIndex}-${i}" title="解析路径: ${safeChain}">
@@ -1842,10 +1846,10 @@
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h2 style="font-size:0.9rem; margin:0; color: var(--text-main);">${item.domain}</h2>
                                                 ${item.comment ? (() => {
-                        const colors = getColorForComment(item.comment);
-                        const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}20; padding: 1px 6px; font-size: 0.65rem;` : '';
-                        return `<span class="comment-tag" style="${style}">${item.comment}</span>`;
-                    })() : ''}
+                            const colors = getColorForComment(item.comment);
+                            const style = colors ? `background-color: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}20; padding: 1px 6px; font-size: 0.65rem;` : '';
+                            return `<span class="comment-tag" style="${style}">${item.comment}</span>`;
+                        })() : ''}
                                             </div>
                                             <div style="font-size:0.7rem; color:var(--text-dim)">${item.server_name}</div>
                                         </div>
@@ -1853,7 +1857,8 @@
                                 `}).join('')}
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+            }).join('')}
                 </div>
             `;
 

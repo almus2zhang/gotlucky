@@ -3,11 +3,253 @@ import json
 import os
 import re
 import sys
-from lucky_data import get_lucky_services
-from scanner_frp import get_frp_configs, parse_frp_config
-from utils import resolve_domain, get_favicon_url, get_mapping_type
+
 
 async def main():
+    if "demo" in sys.argv:
+        print("=== 正在生成演示(Demo)页面 ===")
+        demo_payload = {
+            "ip_aliases": {
+                "192.168.1.10": "家庭存储中心 (NAS)",
+                "192.168.1.20": "主力开发机",
+                "192.168.1.30": "边缘网关 (PVE)",
+                "1.1.1.1": "Cloudflare 加速",
+                "10.0.0.5": "核心路由器 (ROS)",
+                "45.67.89.1": "香港中转节点",
+                "192.168.1.20": "主力开发机",
+                "10.0.0.8": "访客隔离网关"
+            },
+            "services": [
+                {
+                    "domain": "nas.example.top",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/nas.png",
+                    "internal_addr": "http://192.168.1.10:80",
+                    "chain": "Direct ➔ Lucky-Home ➔ NAS",
+                    "frp_info": "无",
+                    "ip": "157.1.2.3",
+                    "access_url": "http://nas.example.top",
+                    "comment": "工具",
+                    "undisplay": False
+                },
+                {
+                    "domain": "emby.demo.com",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/emby.png",
+                    "internal_addr": "http://192.168.1.10:8096",
+                    "chain": "Direct ➔ Home Lucky ➔ Emby Server",
+                    "frp_info": "无",
+                    "ip": "157.1.2.3",
+                    "access_url": "https://emby.demo.com",
+                    "comment": "影音",
+                    "undisplay": False
+                },
+                {
+                    "domain": "mp.demo.com",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/mp.png",
+                    "internal_addr": "http://192.168.1.10:8080",
+                    "chain": "Direct ➔ Home Lucky ➔ Media Player",
+                    "frp_info": "无",
+                    "ip": "157.1.2.3",
+                    "access_url": "https://mp.demo.com",
+                    "comment": "影音",
+                    "undisplay": False
+                },
+                {
+                    "domain": "files.example.top",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/nas.png",
+                    "internal_addr": "http://192.168.1.10:80",
+                    "chain": "FRP ➔ Lucky-Home ➔ NAS File Service",
+                    "frp_info": "FRP 关联 | frpc_home.ini(nas-file): ➔ http://192.168.1.10:5001",
+                    "ip": "45.67.89.1",
+                    "access_url": "http://files.example.top",
+                    "comment": "工具",
+                    "undisplay": False
+                },
+                {
+                    "domain": "blog.demo.com",
+                    "server_name": "Lucky-VPS",
+                    "icon": "favicons/vps.png",
+                    "internal_addr": "http://127.0.0.1:8080",
+                    "chain": "CF Proxy ➔ VPS ➔ Lucky ➔ Docker容器",
+                    "frp_info": "无",
+                    "ip": "1.1.1.1",
+                    "access_url": "https://blog.demo.com",
+                    "comment": "个人",
+                    "undisplay": False
+                },
+                {
+                    "domain": "api.demo.com",
+                    "server_name": "Lucky-VPS",
+                    "icon": "favicons/vps.png",
+                    "internal_addr": "http://127.0.0.1:8080",
+                    "chain": "Direct ➔ VPS ➔ Lucky ➔ API Node",
+                    "frp_info": "无",
+                    "ip": "45.67.89.1",
+                    "access_url": "https://api.demo.com",
+                    "comment": "开发",
+                    "undisplay": False
+                },
+                {
+                    "domain": "sky.lab.local",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/sky.png",
+                    "internal_addr": "http://192.168.1.20:5005",
+                    "chain": "Direct ➔ Home Lucky ➔ Sky Service",
+                    "frp_info": "无",
+                    "ip": "192.168.1.20",
+                    "access_url": "http://sky.lab.local",
+                    "comment": "开发",
+                    "undisplay": False
+                },
+                {
+                    "domain": "koma.lab.local",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/koma.png",
+                    "internal_addr": "http://192.168.1.20:5006",
+                    "chain": "Direct ➔ Home Lucky ➔ Koma App",
+                    "frp_info": "无",
+                    "ip": "192.168.1.20",
+                    "access_url": "http://koma.lab.local",
+                    "comment": "开发",
+                    "undisplay": False
+                },
+                {
+                    "domain": "dev.lab.local",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/vps.png",
+                    "internal_addr": "http://192.168.1.20:5000",
+                    "chain": "FRP ➔ HK Server ➔ Home Lucky ➔ Dev Server",
+                    "frp_info": "FRP 穿透 | frpc.ini(dev-web): ➔ http://127.0.0.1:5000",
+                    "ip": "1.2.3.4",
+                    "access_url": "http://dev.lab.local",
+                    "comment": "开发",
+                    "undisplay": False
+                },
+                {
+                    "domain": "gitlab.lab.local",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/vps.png",
+                    "internal_addr": "http://192.168.1.20:5000",
+                    "chain": "FRP ➔ HK Server ➔ Home Lucky ➔ Git Service",
+                    "frp_info": "FRP 穿透 | frpc.ini(dev-web): ➔ http://127.0.0.1:5000",
+                    "ip": "1.2.3.4",
+                    "access_url": "http://gitlab.lab.local",
+                    "comment": "开发",
+                    "undisplay": False
+                },
+                {
+                    "domain": "guest.wifi.local",
+                    "server_name": "Lucky-Edge",
+                    "icon": "favicons/default.png",
+                    "internal_addr": "http://10.0.0.8:80",
+                    "chain": "Direct ➔ Edge Lucky ➔ Guest Portal",
+                    "frp_info": "无",
+                    "ip": "10.0.0.8",
+                    "access_url": "http://guest.wifi.local",
+                    "comment": "管理",
+                    "undisplay": False
+                },
+                {
+                    "domain": "pve.gateway.net",
+                    "server_name": "Lucky-Edge",
+                    "icon": "favicons/router.png",
+                    "internal_addr": "http://192.168.1.30:8006",
+                    "chain": "Direct ➔ Edge Lucky ➔ PVE WebUI",
+                    "frp_info": "无",
+                    "ip": "192.168.1.30",
+                    "access_url": "https://pve.gateway.net:8006",
+                    "comment": "管理",
+                    "undisplay": False
+                },
+                {
+                    "domain": "router.core.net",
+                    "server_name": "Lucky-Edge",
+                    "icon": "favicons/router.png",
+                    "internal_addr": "http://10.0.0.5:80",
+                    "chain": "Internal Only",
+                    "frp_info": "无",
+                    "ip": "10.0.0.5",
+                    "access_url": "http://router.core.net",
+                    "comment": "管理",
+                    "undisplay": False
+                },
+                {
+                    "domain": "private.safe.net",
+                    "server_name": "Lucky-Home",
+                    "icon": "favicons/router.png",
+                    "internal_addr": "http://10.0.0.5:22",
+                    "chain": "Internal Only",
+                    "frp_info": "无",
+                    "ip": "10.0.0.5",
+                    "access_url": "http://private.safe.net",
+                    "comment": "管理",
+                    "undisplay": True
+                }
+            ],
+            "frp_mappings": [
+                {
+                    "name": "dev-web",
+                    "local_ip": "127.0.0.1",
+                    "local_port": 5000,
+                    "remote_port": 15000,
+                    "server_addr": "45.67.89.1",
+                    "source_file": "frpc_home.ini"
+                },
+                {
+                    "name": "nas-file",
+                    "local_ip": "192.168.1.10",
+                    "local_port": 5001,
+                    "remote_port": 80,
+                    "server_addr": "45.67.89.1",
+                    "source_file": "frpc_home.ini"
+                },
+                {
+                    "name": "vps-blog",
+                    "local_ip": "127.0.0.1",
+                    "local_port": 8080,
+                    "remote_port": 80,
+                    "server_addr": "1.1.1.1",
+                    "source_file": "docker-frpc"
+                },
+                {
+                    "name": "edge-pve",
+                    "local_ip": "192.168.1.30",
+                    "local_port": 8006,
+                    "remote_port": 8006,
+                    "server_addr": "45.67.89.1",
+                    "source_file": "frpc_edge.ini"
+                }
+            ],
+            "terminal_names": {
+                "http://192.168.1.10:80": "NAS 多媒体中心",
+                "http://192.168.1.10:8096": "Emby 流媒体库",
+                "http://192.168.1.10:8080": "本地播放器端",
+                "http://127.0.0.1:8080": "云端应用集群",
+                "http://192.168.1.20:5000": "开发环境流水线",
+                "http://192.168.1.20:5005": "Sky 服务节点",
+                "http://192.168.1.20:5006": "Koma 业务逻辑",
+                "http://192.168.1.30:8006": "底层虚拟化集群 (PVE)",
+                "http://10.0.0.5:80": "内网管理核心",
+                "http://10.0.0.5:443": "受保护管理端",
+                "http://10.0.0.8:80": "访客门户中心"
+            }
+        }
+        
+        output_dir = 'demo'
+        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(os.path.join(output_dir, 'favicons'), exist_ok=True)
+        
+        # 直接走保存和生成流程
+        await save_and_generate(demo_payload, output_dir)
+        return
+
+    from lucky_data import get_lucky_services
+    from scanner_frp import get_frp_configs, parse_frp_config
+    from utils import resolve_domain, get_favicon_url, get_mapping_type
+
     # 加载终端节点别名
     terminal_names = {}
     if os.path.exists('terminal_names.json'):
@@ -526,7 +768,6 @@ async def main():
                 s['icon'] = f"favicons/{domain}.pillow.png" if os.path.exists(pillow_icon_path) else "favicons/default.png"
 
     # 5. 保存数据
-    # 同时保存 JSON 供调试，并生成内嵌数据的 HTML 提高便携性
     output_payload = {
         "ip_aliases": config.get("ip_aliases", {}),
         "services": final_data,
@@ -534,12 +775,15 @@ async def main():
         "terminal_names": terminal_names
     }
     
+    await save_and_generate(output_payload, output_dir)
+
+async def save_and_generate(output_payload, output_dir):
     services_path = os.path.join(output_dir, 'services.json')
     with open(services_path, 'w', encoding='utf-8') as f:
         json.dump(output_payload, f, ensure_ascii=False, indent=2)
     print(f"[+] 数据已保存至 {services_path}")
 
-    # 5. 生成 HTML
+    # 生成 HTML
     if os.path.exists('template.html'):
         with open('template.html', 'r', encoding='utf-8') as f:
             tmpl = f.read()
