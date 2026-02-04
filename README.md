@@ -1,115 +1,143 @@
 # GotLucky - 内网服务自动化导航系统
 
-> 🚀 **[在线演示 (Live Demo)](/demo/index.html)**
+> 🚀 **自动抓取、智能溯源、美观展示** —— 打造属于你的全自动内网服务仪表盘。
 
-本项目通过自动抓取 Lucky 服务器、扫描 FRP 穿透配置以及结合 Cloudflare DNS 信息，自动生成一个美观、交互式的内网服务导航页面。支持网格视图和拓扑连接视图，并具备实时全文搜索功能。
-程序入口是扫描lucky服务器的web服务配置。
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://almus2zhang.github.io/gotlucky/demo/index.html)
 
-## 配置文件设定 (`config.json`)
+GotLucky 是一个旨在解决“内网服务难以管理和记忆”的自动化系统。它通过自动登录你的 [Lucky](https://github.com/gshang2017/lucky) 服务器抓取 Web 规则，结合 FRP 穿透信息和 Cloudflare DNS 数据，自动绘制出完整的服务访问拓扑和高效的导航列表。
 
-配置文件位于项目根目录，名为 `config.json`。以下是各配置项的详细说明：
+---
 
-### 1. 节点别名 (`ip_aliases`)
-用于将冰冷的 IP 地址替换为直观的设备名称，用于拓扑视图根节点显示名。
-```json
-"ip_aliases": {
-    "10.0.0.10": "Home-NAS",
-    "1.2.3.4": "Cloud-Node-A",
-    "10.0.0.1": "Main-Router"
-}
+## ✨ 核心特性
+
+- 🌐 **全自动同步**：通过 Playwright 模拟登录，一键抓取多个 Lucky 节点的 Web 服务配置。
+- 🔍 **智能路径溯源**：
+  - **FRP 关联**：自动扫描系统配置，将 Lucky 入口与后端的 FRP 隧道进行精准匹配。
+  - **回环 IP 替换**：自动将 `127.0.0.1` 映射为真实的服务器物理物理 IP。
+  - **STUN 路由跳转**：支持复杂的跨节点跳转逻辑分析。
+- 🎨 **多维度交互视角**：
+  - **网格视图 (Grid)**：传统的卡片式导航。
+  - **导航视图 (Navigation)**：以终端节点为核心的分组列表，支持**局域网智能探测**（同网络直连，异网络通过网关）。
+  - **拓扑视图 (Topology)**：可视化展示“入口 ➔ 终端设备 ➔ 业务服务”的完整链路。
+  - **FRP 视图**：专注于穿透映射关系的清晰概览。
+- 🚀 **极致性能与智能**：
+  - 支持 **实时全文搜索**。
+  - 具备 **在线状态检查**（Online Check）功能。
+  - 自带 **Demo 模式**，方便演示与分享。
+
+---
+
+## 🛠️ 快速开始
+
+### 1. 安装环境
+
+确保系统中已安装 Python 3.8+。
+
+```bash
+# 拉取代码
+git clone https://github.com/almus2zhang/gotlucky.git
+cd gotlucky
+
+# 安装依赖
+pip install -r requirements.txt
+playwright install chromium
 ```
 
-### 2. Lucky 服务器配置 (`lucky_servers`)
-程序会通过 Playwright 自动登录这些服务器并抓取所有的 Web 服务规则。这部分是整个工程处理的入口，也就是只分析在lucky里面的服务。
-- `name`: 服务器展示名称。
-- `url`: Lucky 管理界面的访问地址。
-- `user`: 登录用户名。
-- `pass`: 登录密码。
-- `myip` (可选): 该服务器的公网出口 IP，用于路径溯源逻辑。
+### 2. 配置文件 (`config.json`)
 
+在项目根目录创建或修改 `config.json`。以下是各配置项的详细说明：
+
+#### 🚀 Lucky 服务器配置 (`lucky_servers`)
+程序的核心入口。通过 Playwright 抓取这些服务器上的所有 Web 规则。
 ```json
 "lucky_servers": [
     {
-        "name": "Home-Lucky",
-        "url": "https://lucky.example.com",
-        "user": "admin",
-        "pass": "password",
-        "myip": "8.8.8.8"
+        "name": "家里的老牛",          // 服务器展示名称
+        "url": "http://192.168.1.1:8800", // Lucky 管理后台地址
+        "user": "admin",                // 登录用户名
+        "pass": "password",             // 登录密码
+        "myip": "1.2.3.4"               // [可选] 该节点的公网出口 IP，用于链路诊断
     }
 ]
 ```
 
-### 3. Cloudflare 配置 (`cloudflare`)
-用于获取 DNS 记录和解析状态（是否开启了代理）。
-- `api_token`: 具有 DNS 读取权限的 Cloudflare API 令牌。
-
+#### ☁️ Cloudflare 配置 (`cloudflare`)
+用于同步域名的 Proxy 状态（是否开启了小云朵）及 DNS 解析记录。
 ```json
 "cloudflare": {
-    "api_token": "YOUR_CLOUDFLARE_API_TOKEN"
+    "api_token": "YOUR_CF_TOKEN" // 需具备 DNS:Read 权限
 }
 ```
 
-### 4. 静态映射与高级逻辑 (`static_mappings`)
-这是系统的核心，用于定义特定域名的展示、转换和分析逻辑。
-
-#### A. 端口映射 (`port_map`)
-用于解决 Lucky 前端端口与实际访问端口不一致的情况（例如经过了外部防火墙或路由器转发）。
-- **逻辑**：如果该域名的“前端端口”或 Lucky 识别到的“后端端口”命中了 `port_map` 的 Key，建议的访问 URL 就会使用对应的 Value 作为端口。
-- **例子**：Lucky 规则里写的是 `8099` 端口，但在公网上是通过 `18099` 访问的。
+#### 🏷️ 节点别名 (`ip_aliases`)
+将冰冷的 IP 地址替换为直观的设备名称，在拓扑视图中作为根节点名称显示。
 ```json
-{
-    "pattern": "nas.example.com",
-    "port_map": { "8099": "18099" }
+"ip_aliases": {
+    "192.168.1.10": "家庭存储 (NAS)",
+    "192.168.1.1": "主路由器",
+    "45.67.89.1": "香港中转 VPS"
 }
 ```
 
-#### B. STUN 路由跳转 (`stun_route`)
-用于处理 Lucky 复杂的“穿透 + 跳转”场景。例如：A 服务器做 STUN 穿透，但实际上最终数据流向了 B 服务器。
-- **逻辑**：`pattern` 是域名匹配正则，`replacement` 是要跳转到的“逻辑目标域名”。程序会在所有已抓取的 Lucky 规则中寻找这个“目标域名”，并提取该域名的真实物理 IP 作为当前服务的最终端点。
-- **例子**：当访问 `service.example.com` 时，它的流量实际上是经过 `relay.example.com` 节点转发的。
+#### 🛠️ 静态映射与高级逻辑 (`static_mappings`)
+用于定义特定域名的展示转换和复杂的 STUN/FRP 溯源逻辑。
 ```json
-"stun_route": {
-    "service.example.com": "relay.example.com"
-}
+"static_mappings": [
+    {
+        "pattern": "nas.example.com", 
+        "port_map": { 
+            "8099": "18099" // Lucky 内部转发 8099，但外部访问端口是 18099
+        }
+    },
+    {
+        "pattern": ".*.lab.local",
+        "stun_route": "gateway.example.com" // 若匹配此正则，其物理端点强制指向 gateway 的 IP
+    }
+]
 ```
 
-### 5. 高级溯源技术详解
+### 3. 生成页面
 
-#### I. FRP 自动化溯源流程
-系统会自动扫描 `/lib/systemd/system` 下的 `frpc` 相关服务文件，并尝试将 Lucky 的“后端地址”与 FRP 建立关联。
+```bash
+# 正常模式（会尝试下载 Favicon）
+python main.py
 
-**溯源步骤示例：**
-1. **Lucky 端**：在服务器 `Cloud-Node-A` 上抓到一个规则：`myblog.example.com ➔ 127.0.0.1:6001`。
-2. **分析**：程序识别到该服务的后端出口是本地 `6001` 端口。
-3. **FRP 扫描**：程序在所有 FRP 配置文件中寻找 `remote_port = 6001` 且服务器指向 `Cloud-Node-A-IP` 的规则。
-4. **发现关联**：找到一个 FRP 规则，其本地指向 `10.0.0.20:80`（内部 Web 服务器）。
-5. **最终结果**：拓扑图会实时绘制一条链路：`访客 ➔ Cloud-Node-A ➔ [FRP穿透] ➔ 10.0.0.20:80`。
+# 快速模式（跳过图标下载）
+python main.py skipicon
 
-#### II. 127.0.0.1 智能替换逻辑
-为了在拓扑图中显示真实的物理路径，系统会自动处理“本地回环”地址。
-- **场景**：Lucky 显示后端地址为 `http://127.0.0.1:5000`。
-- **处理**：系统识别出这一规则运行在 `Media-Server` 服务器上（IP 为 `10.0.0.100`），会自动将 `127.0.0.1` 替换为 `10.0.0.100`。
-- **效果**：终端节点会显示为 `http://10.0.0.100:5000`，使您可以一眼看出服务运行在哪台物理设备上。
+# 演示模式（使用内置的演示数据集生成 demo 目录）
+python main.py demo
+```
 
-## 运行环境与执行
-1. **拉取本项目**
-  在运行frpc的内网机器上拉取本项目
-   ```bash
-   git clone https://github.com/almus2zhang/gotlucky.git
-   cd gotlucky
-   ```
-2. **环境准备**:
-   ```bash
-   pip install -r requirements.txt
-   playwright install chromium
-   ```
+---
 
-3. **生成页面**:
-   ```bash
-   更具自己的情况修改config.json
-   python main.py
-   ```
-   - 使用 `python main.py skipicon` 可跳过 Favicon 下载，加快生成速度。
+## 📖 核心功能详解
 
-4. **查看结果**:
-   打开生成的 `index.html` 即可看到完整的导航面板。
+### 智能跳转逻辑 (Smart Access)
+在“导航视图”中，点击终端卡片时系统会：
+1. **WebRTC 检测**：探测当前浏览器所在环境的内网 IP。
+2. **子网匹配**：若本机 IP 与目标终端处于同一网段，则直接打开内网地址。
+3. **探测连接**：若匹配失败，系统会尝试探测内网连通性。若无法直连，则自动切换为通过 **Lucky 公网入口** 访问。
+
+### 拓扑链路分析
+系统会将复杂的内网架构抽象为：
+`访客环境 ➔ 入口节点 (Cloudflare/Lucky) ➔ [FRP/Direct] ➔ 物理服务器 (终端节点) ➔ 最终服务`
+
+在**拓扑视图**中，你可以清晰地通过动态连线看到服务的实时运行路径及归属设备。
+
+---
+
+## 📂 目录结构
+
+- `main.py`: 系统核心逻辑，负责抓取、分析与数据生成。
+- `template.html`: 基于现代 CSS 和原生 JS 构建的响应式前端模板。
+- `cf_dns.py`: Cloudflare DNS 信息同步模块。
+- `demo/`: 预生成的动态演示环境及图标库。
+
+---
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 或 Pull Request 来改进路径算法或丰富前端交互。
+
+*如果这个项目对你有帮助，欢迎点个 ⭐️ Star！*
