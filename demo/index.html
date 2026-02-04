@@ -516,7 +516,7 @@
             }
         }
 
-        /* Old Topology View Styles */
+        /* Old Topology View Styles Refined */
         #topology-view {
             display: none;
             max-width: 1600px;
@@ -526,56 +526,113 @@
             min-height: 800px;
         }
 
-        .topo-container {
-            display: flex;
-            flex-direction: column;
+        .topo-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
             gap: 2rem;
             position: relative;
+            align-items: flex-start;
         }
 
         #topo-roots {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #f1f3f4;
+            flex-direction: column;
+            gap: 0.6rem;
             position: sticky;
-            top: 0;
-            background: var(--bg-color);
+            top: 2rem;
             z-index: 20;
+            padding-bottom: 2rem;
         }
 
         #topo-stage {
-            min-height: 400px;
             position: relative;
+            min-height: 600px;
+            padding-left: 1rem;
         }
 
-        @media (max-width: 600px) {
-            #topo-roots {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                padding-bottom: 1rem;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                /* Firefox */
+        @media (max-width: 1024px) {
+            .topo-layout {
+                grid-template-columns: 1fr;
+                gap: 0;
             }
 
-            #topo-roots::-webkit-scrollbar {
-                display: none;
-                /* Safari/Chrome */
+            #topo-roots {
+                position: static;
+                padding-bottom: 0;
             }
 
             .ip-group {
-                flex-shrink: 0;
+                margin-bottom: 0.5rem;
+                overflow: hidden;
+            }
+
+            .ip-group.active {
+                border-bottom: 2px solid var(--google-blue);
+            }
+
+            #topo-stage {
+                display: none;
+                /* Stage removed for mobile tree view */
+            }
+
+            .mobile-detail {
+                padding: 0;
+                background: #f8fbff;
+                display: none;
+            }
+
+            .ip-group.active .mobile-detail {
+                display: block;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            .topo-group {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 0.8rem 1rem;
+                border-left: 2px solid var(--google-blue);
+                margin: 0.4rem 0.8rem 0.6rem 1.8rem;
+                background: #fff;
+                border-radius: 0 10px 10px 0;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .service-nodes {
+                width: 100%;
+                padding-left: 0.4rem;
+                gap: 0.4rem;
+            }
+
+            .service-mini-card {
+                min-width: 0;
+                width: 100%;
+                margin-bottom: 0.2rem;
+            }
+
+            .topo-svg {
+                display: none !important;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
         .ip-group {
             border: 1px solid #e8eaed;
-            border-radius: 8px;
+            border-radius: 12px;
             background: #fff;
             transition: var(--transition);
             cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .ip-group:hover {
@@ -625,14 +682,14 @@
         .ip-content {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 0.75rem;
             width: 100%;
         }
 
         .topo-group {
             display: flex;
             align-items: flex-start;
-            gap: 3rem;
+            gap: 2.5rem;
             position: relative;
         }
 
@@ -661,7 +718,7 @@
         .end-node {
             background: #fff;
             border: 2px solid var(--google-blue);
-            padding: 0.8rem 1.2rem;
+            padding: 0.6rem 1rem;
             border-radius: 12px;
             box-shadow: var(--card-shadow);
             z-index: 10;
@@ -683,14 +740,14 @@
         .service-nodes {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.6rem;
             flex: 1;
         }
 
         .service-mini-card {
             background: #fff;
             border: 1px solid var(--border-color);
-            padding: 0.8rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -720,23 +777,24 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+            overflow: visible;
+            /* Ensure lines starting from the gap are visible */
         }
 
         .connection-line {
             fill: none;
             stroke: #dfe1e5;
-            stroke-width: 2;
+            stroke-width: 2.5;
             transition: stroke 0.3s;
         }
 
-        .topo-group:hover .connection-line {
+        .connection-line.primary {
             stroke: var(--google-blue);
-            opacity: 0.4;
+            stroke-width: 3;
         }
 
         .pulse-circle {
-            fill: var(--google-blue);
-            filter: blur(2px);
+            filter: drop-shadow(0 0 4px currentColor) blur(1px);
         }
 
         .container {
@@ -1505,7 +1563,7 @@
         async function checkConnectivity(url) {
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 1500); // 1.5s timeout for local check
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
                 await fetch(url, { mode: 'no-cors', signal: controller.signal });
                 clearTimeout(timeoutId);
                 return true;
@@ -1514,20 +1572,75 @@
             }
         }
 
-        async function handleTerminalClick(internalAddr, entryAddr) {
-            // Check if internalAddr is actually a "local" or private address
-            const isLocal = /^(localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/.test(internalAddr.replace(/^https?:\/\//, ''));
+        let cachedLocalIP = null;
+        let isInternalNetworkSource = null; // true if we've confirmed we are in a LAN environment
 
-            if (isLocal) {
-                console.log(`Checking connectivity to internal address: ${internalAddr}`);
-                const reachable = await checkConnectivity(internalAddr);
-                if (reachable) {
+        async function getLocalIP() {
+            if (cachedLocalIP) return cachedLocalIP;
+            return new Promise((resolve) => {
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                pc.createDataChannel("");
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                pc.onicecandidate = (ice) => {
+                    if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                        resolve(cachedLocalIP);
+                        return;
+                    }
+                    const parts = ice.candidate.candidate.split(' ');
+                    const ip = parts[4];
+                    if (ip && !ip.endsWith('.local')) {
+                        cachedLocalIP = ip;
+                        resolve(ip);
+                    }
+                };
+                // Timeout after 500ms if no candidate found
+                setTimeout(() => resolve(cachedLocalIP), 500);
+            });
+        }
+
+        function isInSameSubnet(ip1, ip2) {
+            if (!ip1 || !ip2) return false;
+            // Simple check: first 3 octets for 192.168.x.x
+            const p1 = ip1.split('.');
+            const p2 = ip2.split('.');
+            if (p1.length < 3 || p2.length < 3) return false;
+            return p1[0] === p2[0] && p1[1] === p2[1] && p1[2] === p2[2];
+        }
+
+        async function handleTerminalClick(internalAddr, entryAddr) {
+            const cleanAddr = internalAddr.replace(/^https?:\/\//, '').split(':')[0];
+            const isPrivateIP = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/.test(cleanAddr);
+            const isLoopback = /^(localhost|127\.0\.0\.1)/.test(cleanAddr);
+
+            if (isLoopback) {
+                window.open(internalAddr, '_blank');
+                return;
+            }
+
+            if (isPrivateIP) {
+                // 1. First try simple IP prefix match (fast)
+                const myIp = await getLocalIP();
+                if (isInSameSubnet(myIp, cleanAddr)) {
+                    console.log("Direct access triggered by subnet match.");
+                    window.open(internalAddr, '_blank');
+                    return;
+                }
+
+                // 2. If no IP match, or WebRTC failed, try the connectivity probe
+                // Use cached result if available to speed up
+                if (isInternalNetworkSource === null) {
+                    console.log(`Probing network environment via: ${internalAddr}`);
+                    isInternalNetworkSource = await checkConnectivity(internalAddr);
+                }
+
+                if (isInternalNetworkSource) {
                     window.open(internalAddr, '_blank');
                 } else {
-                    console.log(`Internal address not reachable, opening entry address: ${entryAddr}`);
+                    console.log(`Direct access failed, using entry: ${entryAddr}`);
                     window.open(entryAddr, '_blank');
                 }
             } else {
+                // Global IP or domain, just open it
                 window.open(internalAddr, '_blank');
             }
         }
@@ -1759,7 +1872,6 @@
                 );
             }
 
-            // Group by End IP (extracted from internal_addr), then by internal_addr
             const ipGroups = {};
             data.forEach(s => {
                 let addr = s.internal_addr || 'unknown';
@@ -1780,14 +1892,15 @@
                 ipGroups[ip][addr].push(s);
             });
 
-            // Make data globally available for toggle
             window.currentTopoData = Object.entries(ipGroups).sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }));
 
             let html = `
-                <div id="topo-roots"></div>
-                <div id="topo-stage">
-                    <svg class="topo-svg" id="topo-svg"></svg>
-                    <div id="topo-detail-content"></div>
+                <div class="topo-layout">
+                    <div id="topo-roots"></div>
+                    <div id="topo-stage">
+                        <svg class="topo-svg" id="topo-svg"></svg>
+                        <div id="topo-detail-content"></div>
+                    </div>
                 </div>
             `;
             container.innerHTML = html;
@@ -1795,42 +1908,54 @@
             const rootsContainer = document.getElementById('topo-roots');
             rootsContainer.innerHTML = window.currentTopoData.map(([ip, addrGroups], idx) => `
                 <div class="ip-group" id="root-node-${idx}" onclick="toggleIpStage(${idx})">
-                    <div class="ip-header">
-                        <div class="ip-node" style="${ip === 'TEXT' ? 'background: var(--google-yellow)' : ''}">
-                            <span>${ip === 'TEXT' ? '文字描述类 (TEXT)' : (ipAliases[ip] || ip)}</span>
-                            ${(ip !== 'TEXT' && ipAliases[ip]) ? `<span style="opacity:0.7; font-size:0.8rem; font-weight:normal; margin-left:6px">(${ip})</span>` : ''}
+                    <div class="ip-header" style="padding: 0.8rem 1rem;">
+                        <div class="ip-node" style="${ip === 'TEXT' ? 'background: var(--google-yellow); color: #3c4043;' : ''}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                <line x1="6" y1="6" x2="6" y2="6"></line>
+                                <line x1="6" y1="18" x2="6" y2="18"></line>
+                            </svg>
+                            <span>${ip === 'TEXT' ? '文字描述类' : (ipAliases[ip] || ip)}</span>
                         </div>
+                        ${(ip !== 'TEXT' && ipAliases[ip]) ? `<div style="font-size:0.75rem; color:var(--text-dim); margin-top:4px; margin-left:8px;">${ip}</div>` : ''}
                     </div>
+                    <div class="mobile-detail" id="mobile-detail-${idx}"></div>
                 </div>
             `).join('');
         }
 
         function toggleIpStage(index) {
-            const detailContainer = document.getElementById('topo-detail-content');
             const roots = document.querySelectorAll('.ip-group');
             const targetRoot = document.getElementById(`root-node-${index}`);
+            const isNarrow = window.innerWidth <= 1024;
 
-            // If clicking the already active one, collapse it
             if (targetRoot.classList.contains('active')) {
                 targetRoot.classList.remove('active');
-                detailContainer.innerHTML = '';
-                document.getElementById('topo-svg').innerHTML = '';
+                if (!isNarrow) {
+                    document.getElementById('topo-detail-content').innerHTML = '';
+                    document.getElementById('topo-svg').innerHTML = '';
+                }
                 return;
             }
 
-            // Collapse others
-            roots.forEach(r => r.classList.remove('active'));
+            roots.forEach(r => {
+                r.classList.remove('active');
+                const md = r.querySelector('.mobile-detail');
+                if (md) md.innerHTML = '';
+            });
+
             targetRoot.classList.add('active');
 
             const [ip, addrGroups] = window.currentTopoData[index];
 
-            detailContainer.innerHTML = `
+            const detailHTML = `
                 <div class="ip-content" id="active-ip-content">
                     ${Object.entries(addrGroups).map(([addr, items], gIndex) => {
                 const displayName = terminalNames[addr] || "终端节点";
                 return `
                         <div class="topo-group" id="active-topo-group-${gIndex}">
-                            <div class="end-node" id="active-end-node-${gIndex}">
+                            <div class="end-node" id="active-end-node-${gIndex}" onclick="handleTerminalClick('${addr}', '${items[0].access_url}')" style="cursor:pointer">
                                 <strong>${displayName}</strong>
                                 <span>${addr}</span>
                             </div>
@@ -1862,21 +1987,58 @@
                 </div>
             `;
 
-            // Draw paths only if not on mobile (mobile uses vertical layout without paths)
-            if (window.innerWidth > 768) {
-                setTimeout(() => drawStagePaths(), 50);
+            if (isNarrow) {
+                targetRoot.querySelector('.mobile-detail').innerHTML = detailHTML;
             } else {
-                document.getElementById('topo-svg').innerHTML = '';
+                const detailContainer = document.getElementById('topo-detail-content');
+                detailContainer.innerHTML = detailHTML;
+
+                // Center logic: Align the center of active-ip-content with the center of targetRoot
+                const rootRect = targetRoot.getBoundingClientRect();
+                const rootsContainer = document.getElementById('topo-roots');
+                const rootsRect = rootsContainer.getBoundingClientRect();
+                const containerRect = document.getElementById('topo-stage').getBoundingClientRect();
+
+                const relativeTop = rootRect.top - containerRect.top;
+                const rootHeight = rootRect.height;
+
+                // Allow some time for content to render to get accurate height
+                setTimeout(() => {
+                    const content = document.getElementById('active-ip-content');
+                    const contentHeight = content.offsetHeight;
+
+                    // target top = root center - content half height
+                    let topOffset = (relativeTop + rootHeight / 2) - (contentHeight / 2);
+
+                    // Keep it within reasonable bounds (don't push it off screen top)
+                    topOffset = Math.max(0, topOffset);
+
+                    content.style.marginTop = `${topOffset}px`;
+                    drawStagePaths(index);
+                }, 10);
             }
         }
 
-        function drawStagePaths() {
+        function drawStagePaths(rootIndex) {
             const container = document.getElementById('topo-stage');
             const svg = document.getElementById('topo-svg');
-            if (!svg || !container) return;
+            const rootNode = document.getElementById(`root-node-${rootIndex}`);
+            if (!svg || !container || !rootNode) return;
+
+            // Ensure stage is tall enough for the detail content
+            const detailContent = document.getElementById('active-ip-content');
+            if (detailContent) {
+                container.style.minHeight = (detailContent.offsetHeight + parseInt(detailContent.style.marginTop || 0) + 100) + 'px';
+            }
 
             const containerRect = container.getBoundingClientRect();
             let svgPaths = '';
+
+            // Root -> End Nodes
+            const rootRect = rootNode.getBoundingClientRect();
+            // startX is negative relative to containerRect because of the grid gap
+            const startX = rootRect.right - containerRect.left + 5; // +5 to clear the border slightly
+            const startY = rootRect.top + rootRect.height / 2 - containerRect.top;
 
             const endNodes = document.querySelectorAll('.end-node');
             endNodes.forEach(endNode => {
@@ -1884,47 +2046,53 @@
                 const gIndex = endNodeIdParts[endNodeIdParts.length - 1];
                 const endRect = endNode.getBoundingClientRect();
 
+                const targetX = endRect.left - containerRect.left;
+                const targetY = endRect.top + endRect.height / 2 - containerRect.top;
+                const cp1X = startX + (targetX - startX) / 2;
+
+                const d = `M ${startX} ${startY} C ${cp1X} ${startY}, ${cp1X} ${targetY}, ${targetX} ${targetY}`;
+
+                // Main line
+                svgPaths += `<path class="connection-line primary" d="${d}" style="stroke-opacity: 0.5;" />`;
+
+                // Pulse circle
+                svgPaths += `
+                    <circle r="4" style="fill: var(--google-blue); opacity: 0.8" class="pulse-circle">
+                        <animateMotion dur="2.5s" repeatCount="indefinite" path="${d}" />
+                    </circle>
+                `;
+
                 // End Node -> Service Nodes
                 const services = document.querySelectorAll(`[id^="active-service-node-${gIndex}-"]`);
                 services.forEach(serviceNode => {
                     const serviceRect = serviceNode.getBoundingClientRect();
+                    const sStartX = endRect.right - containerRect.left;
+                    const sStartY = endRect.top + endRect.height / 2 - containerRect.top;
+                    const sEndX = serviceRect.left - containerRect.left;
+                    const sEndY = serviceRect.top + serviceRect.height / 2 - containerRect.top;
+
+                    const cp2X = sStartX + (sEndX - sStartX) / 2;
+                    const sd = `M ${sStartX} ${sStartY} C ${cp2X} ${sStartY}, ${cp2X} ${sEndY}, ${sEndX} ${sEndY}`;
+
                     const status = serviceNode.getAttribute('data-status');
+                    let color = 'var(--google-blue)';
+                    if (status === 'online') color = 'var(--google-green)';
+                    else if (status === 'offline') color = 'var(--google-red)';
 
-                    let pulseColor = 'var(--google-blue)';
-                    if (status === 'online') pulseColor = 'var(--google-green)';
-                    else if (status === 'offline') pulseColor = 'var(--google-red)';
+                    svgPaths += `<path class="connection-line" d="${sd}" style="stroke: ${color}; stroke-opacity: 0.4; stroke-width: 2.5;" />`;
 
-                    const startX = endRect.right - containerRect.left;
-                    const startY = endRect.top + endRect.height / 2 - containerRect.top;
-                    const endX = serviceRect.left - containerRect.left;
-                    const endY = serviceRect.top + serviceRect.height / 2 - containerRect.top;
-
-                    const d = `M ${startX} ${startY} C ${startX + 40} ${startY}, ${endX - 40} ${endY}, ${endX} ${endY}`;
-                    svgPaths += `<path class="connection-line" d="${d}" />`;
-
-                    if (status === 'offline') {
-                        // Place X on the right side node (service node)
-                        const xOffset = -8;
-                        svgPaths += `
-                            <g transform="translate(${endX + xOffset}, ${endY})">
-                                <line x1="-5" y1="-5" x2="5" y2="5" stroke="var(--google-red)" stroke-width="3" stroke-linecap="round" />
-                                <line x1="-5" y1="5" x2="5" y2="-5" stroke="var(--google-red)" stroke-width="3" stroke-linecap="round" />
-                            </g>
-                        `;
-                    } else {
-                        // Online or Unknown states (Green/Blue circles)
-                        svgPaths += `
-                            <circle r="3" class="pulse-circle" style="fill: ${pulseColor};">
-                                <animateMotion dur="${2 + Math.random() * 2}s" repeatCount="indefinite" path="${d}" />
-                            </circle>
-                        `;
-                    }
+                    // Small indicator pulses for service paths
+                    svgPaths += `
+                        <circle r="3" style="fill: ${color}; opacity: 0.6" class="pulse-circle">
+                            <animateMotion dur="${1.5 + Math.random()}s" repeatCount="indefinite" path="${sd}" />
+                        </circle>
+                    `;
                 });
             });
 
             svg.innerHTML = svgPaths;
-            svg.style.display = 'block'; // Ensure it's visible
         }
+
 
 
         async function checkAllStatus() {
